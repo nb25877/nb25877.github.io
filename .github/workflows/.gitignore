@@ -1,4 +1,3 @@
 site/
 .DS_Store
 *.log
-docs/modules/_template-module.module
