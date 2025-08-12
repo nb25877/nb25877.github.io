@@ -10,7 +10,7 @@ hide:
 # Nikunj Bhalotia
 _MSc Cyber Security (University of Essex Online)_
 
-> Welcome to my academic e-portfolio, documenting learning outcomes, key artifacts, reflections, and certifications throughout the MSc.
+> Welcome to my academic e-portfolio, documenting learning outcomes, key artifacts, reflections, and certifications throughout my MSc Journy.
 
 <div class="grid cards" markdown>
 - :material-shield-lock-outline: **Focus Areas**
