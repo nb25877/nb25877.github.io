@@ -8,6 +8,9 @@ hide:
 ---
 
 # Nikunj Bhalotia
+<p align="center">
+  <img src="assets/images/profile.png" alt="Nikunj Bhalotia" style="border-radius:50%; width:200px; height:200px; object-fit:cover;">
+</p>
 _MSc Cyber Security (University of Essex Online)_
 
 > Welcome to my academic e-portfolio, documenting learning outcomes, key artifacts, reflections, and certifications throughout my MSc Journy.
