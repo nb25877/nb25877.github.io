@@ -9,17 +9,41 @@
   <nav id="menu">
     <header class="major"><h2>Menu</h2></header>
     <ul>
-        <li><a href="{{ '/' | relative_url }}" class="{% if page.nav == 'home' %}active{% endif %}">About Me</a></li>
-        <li>
-          <a href="{{ '/modules/' | relative_url }}" class="{% if page.nav == 'modules' %}active{% endif %}">Modules</a>
-          <ul>
-            <li><a href="{{ '/modules/induction-computing/' | relative_url }}">Induction Computing</a></li>
-            <li><a href="{{ '/modules/launching-into-computing/' | relative_url }}">Launching Into Computing</a></li>
-            <li><a href="{{ '/modules/advanced-oop-design/' | relative_url }}">Advanced OOP & Design</a></li>
-            <li><a href="{{ '/modules/network-security/' | relative_url }}">Network Security</a></li>
-          </ul>
-        </li>
-        <li><a href="{{ '/skills/' | relative_url }}" class="{% if page.nav == 'skills' %}active{% endif %}">Skills &amp; Action Plan</a></li>
-        <li><a href="{{ '/meeting-notes/' | relative_url }}" class="{% if page.nav == 'notes' %}active{% endif %}">Meeting Notes</a></li>
-      </ul>
+      <li>
+        <a href="{{ '/' | relative_url }}"
+           class="{% if page.nav == 'home' %}active{% endif %}">About Me</a>
+      </li>
+  
+      <!-- Modules -->
+      <li>
+        <a href="{{ '/modules/' | relative_url }}"
+           class="{% if page.nav == 'modules' and page.url == '/modules/' %}active{% endif %}">
+          Modules (Overview)
+        </a>
+      </li>
+      <li>
+        <a href="{{ '/modules/induction-computing/' | relative_url }}"
+           class="{% if page.url contains '/modules/induction-computing/' %}active{% endif %}">
+          Induction Computing
+        </a>
+      </li>
+      <li>
+        <a href="{{ '/modules/launching-into-computing/' | relative_url }}"
+           class="{% if page.url contains '/modules/launching-into-computing/' %}active{% endif %}">
+          Launching Into Computing
+        </a>
+      </li>
+      <li>
+        <a href="{{ '/modules/advanced-oop-design/' | relative_url }}"
+           class="{% if page.url contains '/modules/advanced-oop-design/' %}active{% endif %}">
+          Advanced Object Oriented Design &amp; Programming
+        </a>
+      </li>
+      <li>
+        <a href="{{ '/modules/network-security/' | relative_url }}"
+           class="{% if page.url contains '/modules/network-security/' %}active{% endif %}">
+          Network Security
+        </a>
+      </li>
+    </ul>
   </nav>
