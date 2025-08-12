@@ -94,6 +94,5 @@ nav:
       - modules/index.md
       - Introduction to Computing: modules/introduction-to-computing.md
       # Duplicate the template below for new modules:
-      - Template – New Module: modules/_template-module.md
   - Certifications: certifications.md
   - Contact: contact.md
