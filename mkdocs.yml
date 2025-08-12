@@ -7,7 +7,7 @@ use_directory_urls: true
 theme:
   name: material
   language: en
-  logo: assets/logo-shield.svg
+  logo: assets/images/profile.png
   favicon: assets/favicon-shield.png
   icon:
     repo: fontawesome/brands/github
