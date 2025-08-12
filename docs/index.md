@@ -18,7 +18,7 @@ _MSc Cyber Security (University of Essex Online)_
 - :material-file-document-multiple: **Latest Artifacts**
   - See [Modules](modules/index.md) for reports, presentations, and code.
 - :material-certificate-outline: **Certifications**
-  - [View certifications](../certifications.md){ .md-button }
+  - [View certifications](certifications.md){ .md-button }
 - :material-linkedin: **Connect**
   - [LinkedIn](https://www.linkedin.com/in/nbhal/){ target=_blank }
 </div>
