@@ -1,48 +1,167 @@
 ---
 layout: default
-title: Launching Into Computing
+title: Launching into Computing
 nav: modules
 permalink: /modules/launching-into-computing/
 ---
 
-<header class="major"><h1>Launching Into Computing</h1></header>
-<p class="icon solid fa-calendar-alt"><strong>Semester:</strong> 2025 &nbsp;&nbsp;
-<span class="icon solid fa-user"></span> <strong>Tutor:</strong> (name)</p>
+<header class="major">
+  <h1>Launching into Computing</h1>
+  <p><strong>Dates:</strong> April 2025 · <strong>Duration:</strong> 12 weeks · <strong>Tutor:</strong> Zeeshan Siddiqui</p>
+  <p><a href="{{ '/modules/' | relative_url }}">← Back to Modules</a></p>
+</header>
 
-<h2>Learning Outcomes</h2>
-<ol>
-  <li>LO1: …</li><li>LO2: …</li><li>LO3: …</li><li>LO4: …</li>
-</ol>
+<section>
+  <header class="major"><h2>Module overview</h2></header>
+  <p>
+    This module introduced the fundamental disciplines that underpin modern enterprise computing:
+    <strong>Software Engineering, Artificial Intelligence, Cybersecurity, Data Science,</strong> and
+    <strong>Enterprise IT Management</strong>. It connected technical principles to ethical, legal, and social
+    considerations—particularly the role of computing in promoting <strong>equality, diversity, and inclusion (EDI)</strong>.
+    We examined how software design, security controls, AI adoption, data governance, and strategic IT management interact,
+    and applied critical, evidence-based thinking to real-world enterprise challenges.
+  </p>
+</section>
 
-<h2>Artefacts</h2>
-<div class="table-wrapper">
-  <table>
-    <thead><tr><th>Artefact</th><th>Description</th><th>Link</th><th>Feedback</th></tr></thead>
-    <tbody>
-      <tr>
-        <td>Report</td><td>Brief description.</td>
-        <td><a href="{{ '/assets/artefacts/launching-into-computing/report.pdf' | relative_url }}" target="_blank" rel="noopener">PDF</a></td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td>Slides</td><td>Brief description.</td>
-        <td><a href="{{ '/assets/artefacts/launching-into-computing/slides.pptx' | relative_url }}" target="_blank" rel="noopener">PPTX</a></td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td>Code</td><td>Brief description.</td>
-        <td><a href="https://github.com/nb25877/REPO" target="_blank" rel="noopener">GitHub</a></td>
-        <td>—</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<section>
+  <header class="major"><h2>Aims</h2></header>
+  <ul>
+    <li>Introduce key concepts across SE/AI/DS/Cyber.</li>
+    <li>Build understanding of software design &amp; implementation methods.</li>
+    <li>Map functional/non-functional requirements to cybersecurity controls.</li>
+    <li>Explain core AI principles and enabling technologies.</li>
+    <li>Develop the ability to present critical, evidence-based arguments to varied audiences.</li>
+    <li>Explore how computing can reduce barriers and support EDI.</li>
+    <li>Encourage reflection and evaluation of personal development.</li>
+  </ul>
+</section>
 
-<h2>Reflection</h2>
-<p>…</p>
+<section>
+  <header class="major"><h2>Learning outcomes</h2></header>
+  <ul>
+    <li>Identify and <strong>critically analyse</strong> computing challenges and processes in business systems.</li>
+    <li><strong>Gather and synthesise</strong> information from diverse sources to design/analyse solutions.</li>
+    <li><strong>Evaluate</strong> methodologies, tools, and techniques to mitigate/solve computing issues and their business impact.</li>
+    <li><strong>Articulate</strong> legal, social, ethical, and professional issues faced by computing professionals.</li>
+  </ul>
+</section>
 
-<h2>Meeting Notes</h2>
-<ul><li>YYYY-MM-DD — …</li></ul>
+<section>
+  <header class="major"><h2>Assessed discussion activity</h2></header>
 
-<h2>References (Harvard)</h2>
-<p>…</p>
+  <p><strong>Theme:</strong> <em>The Evolution of Computing and Its Impact on Business and Society</em> (4-week forum)</p>
+  <p><strong>My initial post:</strong> <em>Bridging the Awareness Gap: Cybersecurity Challenges in the Age of Digital Banking</em> (5 May 2025)</p>
+  <ul>
+    <li>Argued that rapid <strong>digital banking</strong> adoption outpaced user awareness, increasing exposure to phishing, credential theft, fake apps, and QR scams.</li>
+    <li>Proposed <strong>culturally relevant, accessible awareness programmes</strong> and digital literacy initiatives; cited Google <em>DigiKavach</em> as a scalable model.</li>
+    <li>Supported by academic/industry sources on trust, adoption, and limitations of generic awareness campaigns.</li>
+  </ul>
+
+  <p><strong>Peer responses (highlights):</strong></p>
+  <ul>
+    <li>Raised <strong>AI-driven threats</strong> (e.g., deepfakes) and parallels in other sectors (e.g., healthcare).</li>
+    <li>Reinforced need for <strong>community-centric</strong>, culturally aware interventions and cross-stakeholder collaboration.</li>
+  </ul>
+
+  <p><strong>My summary (week 4):</strong> Synthesised class feedback, broadened beyond banking, and argued for gamified, <strong>role-specific</strong> training that respects context and addresses inequalities. Conclusion: <strong>Trust + collaboration + relevance</strong> are key to secure digital adoption.</p>
+
+  <p><strong>Discussion feedback:</strong> “Excellent contributions across all areas… evidence-based, well-referenced; timely and constructive; reflective summary that linked back to class discussions.”</p>
+</section>
+
+<section>
+  <header class="major"><h2>End-of-Module Assessment (EOMA)</h2></header>
+
+  <h3>Part A — Individual Programming Exercise</h3>
+  <p><strong>Title:</strong> <em>Evaluating the Development Models of Two Programming Languages</em></p>
+  <p><strong>Task:</strong> Build two utilities (Python and JavaScript/Node.js) performing the same function and compare development model, readability, performance, scalability/maintainability, and security.</p>
+
+  <ul>
+    <li><strong>Use-case:</strong> Scheduled ingestion of <strong>Microsoft Graph (Entra ID)</strong> users, sign-in logs, and audit logs into <strong>MongoDB</strong> for retention, analytics, and monitoring.</li>
+    <li><strong>Architecture:</strong> App registration + OAuth; batched Graph queries with pagination; idempotent upsert; counters &amp; checkpoints; Dockerised.</li>
+    <li><strong>Dev models:</strong> Python (<code>asyncio</code>, readable, straightforward deps) vs Node.js (event-driven, async-first, rich npm ecosystem).</li>
+    <li><strong>Performance:</strong> Node.js had steadier/lower CPU (peaks ~16%, avg &lt;6%) and finished ~1 minute faster; memory similar; I/O/network comparable.</li>
+    <li><strong>Security:</strong> No secrets in code; environment variables at runtime; container best practices.</li>
+  </ul>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Artefact</th><th>Description</th><th>Link</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Python Source</td>
+          <td>Async ingestion utility (Graph → MongoDB)</td>
+          <td><a href="{{ '/modules/launching-into-computing/assets/Python.zip' | relative_url }}">Download</a></td>
+        </tr>
+        <tr>
+          <td>JavaScript Source</td>
+          <td>Node.js ingestion utility (Graph → MongoDB)</td>
+          <td><a href="{{ '/modules/launching-into-computing/assets/JavaScript.zip' | relative_url }}">Download</a></td>
+        </tr>
+        <tr>
+          <td>Programming Exercise Report</td>
+          <td>Comparative analysis of Python vs Node.js development models &amp; performance</td>
+          <td><a href="{{ '/modules/launching-into-computing/assets/Individual%20Programming%20Exercise%20Report.docx' | relative_url }}" target="_blank" rel="noopener">Open</a></td>
+        </tr>
+        <tr>
+          <td>Demo Video</td>
+          <td>M365 Data Collector demonstration</td>
+          <td><a href="{{ '/modules/launching-into-computing/assets/M365%20Data%20Collector%20Demo.mp4' | relative_url }}" target="_blank" rel="noopener">Watch</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Part B — Individual Presentation &amp; Transcript</h3>
+  <p><strong>Title:</strong> <em>AI-Driven Cybersecurity: Balancing Innovation with Ethical and Security Challenges</em></p>
+  <ul>
+    <li><strong>Adoption &amp; impact:</strong> SOC efficiency gains, Secure Score uplift, enterprise investment trends.</li>
+    <li><strong>Capabilities:</strong> Anomaly detection, SOC automation/XDR, phishing detection (Entra ID Protection, Defender XDR, Sentinel, CrowdStrike).</li>
+    <li><strong>Risks:</strong> Over-reliance, false positives, privacy &amp; profiling, bias, explainability, adversarial ML (evasion, poisoning, inversion, drift).</li>
+    <li><strong>Governance:</strong> NIST <em>AI RMF</em>, EU AI Act, ISO 42001; alignment with SOC 2, GDPR, Zero Trust.</li>
+    <li><strong>Recommendations:</strong> Transparency, AI red teaming, human-in-the-loop, ethics boards, continuous model monitoring.</li>
+  </ul>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Artefact</th><th>Description</th><th>Link</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Presentation Slides</td>
+          <td>PPSX slide deck</td>
+          <td><a href="{{ '/modules/launching-into-computing/assets/AI-Driven%20Cybersecurity-%20Balancing%20Innovation%20with%20Ethical%20and%20Security%20Challenges%20-%20Presentation.ppsx' | relative_url }}" target="_blank" rel="noopener">Open</a></td>
+        </tr>
+        <tr>
+          <td>Transcript</td>
+          <td>Full presentation script</td>
+          <td><a href="{{ '/modules/launching-into-computing/assets/AI-Driven%20Cybersecurity-%20Balancing%20Innovation%20with%20Ethical%20and%20Security%20Challenges%20-%20Transcript.docx' | relative_url }}" target="_blank" rel="noopener">Open</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <header class="major"><h2>Skills developed</h2></header>
+  <ul>
+    <li><strong>Research &amp; synthesis:</strong> Integrating academic, industry, and standards sources into applied designs.</li>
+    <li><strong>Programming practice:</strong> Async ingestion pipelines; Graph API; MongoDB; Dockerisation; operational logging.</li>
+    <li><strong>Evaluation &amp; comparison:</strong> Runtime profiling; language trade-off analysis; operational/security implications.</li>
+    <li><strong>Ethics &amp; governance:</strong> Applying AI RMF/ISO 42001; bias/privacy/explainability awareness; risk-based controls.</li>
+    <li><strong>Communication:</strong> Forum engagement, professional presentation, critical summaries.</li>
+  </ul>
+</section>
+
+<section>
+  <header class="major"><h2>Reflection</h2></header>
+  <p>
+    Although much of the content aligned with my 20+ years of professional computing experience, the module reshaped how I think—especially around
+    <strong>equality, diversity, and inclusion (EDI)</strong>. My learning to date was largely on-the-job and implementation-focused; this academic
+    approach encouraged me to step back, apply <strong>critical thinking</strong>, and ground decisions in structured research rather than purely
+    operational intuition. It broadened my horizon, strengthened my ability to evaluate solutions against technical, ethical, and societal dimensions,
+    and refined how I justify choices for enterprise stakeholders.
+  </p>
+</section>
