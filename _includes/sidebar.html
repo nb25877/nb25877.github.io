@@ -1,0 +1,25 @@
+<!-- Search (static placeholder) -->
+<section id="search" class="alt">
+    <form method="get" action="#">
+      <input type="text" name="query" id="query" placeholder="Search (coming soon)" />
+    </form>
+  </section>
+  
+  <!-- Menu -->
+  <nav id="menu">
+    <header class="major"><h2>Menu</h2></header>
+    <ul>
+        <li><a href="{{ '/' | relative_url }}" class="{% if page.nav == 'home' %}active{% endif %}">About Me</a></li>
+        <li>
+          <a href="{{ '/modules/' | relative_url }}" class="{% if page.nav == 'modules' %}active{% endif %}">Modules</a>
+          <ul>
+            <li><a href="{{ '/modules/induction-computing/' | relative_url }}">Induction Computing</a></li>
+            <li><a href="{{ '/modules/launching-into-computing/' | relative_url }}">Launching Into Computing</a></li>
+            <li><a href="{{ '/modules/advanced-oop-design/' | relative_url }}">Advanced OOP & Design</a></li>
+            <li><a href="{{ '/modules/network-security/' | relative_url }}">Network Security</a></li>
+          </ul>
+        </li>
+        <li><a href="{{ '/skills/' | relative_url }}" class="{% if page.nav == 'skills' %}active{% endif %}">Skills &amp; Action Plan</a></li>
+        <li><a href="{{ '/meeting-notes/' | relative_url }}" class="{% if page.nav == 'notes' %}active{% endif %}">Meeting Notes</a></li>
+      </ul>
+  </nav>

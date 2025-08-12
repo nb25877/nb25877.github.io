@@ -1,0 +1,11 @@
+title: "Nikunj Bhalotia — MSc Cyber Security e-Portfolio"
+description: "Academic e-portfolio"
+url: "https://nikunjb.com"    # your custom domain
+theme: null                   # we use the HTML5 UP assets, not a Ruby theme
+markdown: kramdown
+
+# Optional: pretty permalinks (e.g., /modules/ instead of /modules/index.html)
+permalink: pretty
+
+# If your site is in a subpath, set baseurl; for a custom domain leave it blank:
+baseurl: ""
