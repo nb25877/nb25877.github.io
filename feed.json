@@ -1,0 +1,13 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    "title": "E-Portfolio",
+    "description": "",
+    "home_page_url": "https://nb25877.github.io",
+    "feed_url": "https://nb25877.github.io/feed.json",
+    "user_comment": "",
+    "author": {
+        "name": "Nikunj Bhalotia"
+    },
+    "items": [
+    ]
+}
