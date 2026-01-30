@@ -3,7 +3,7 @@
     <title>Nikunj Bhalotia E-Portfolio</title>
     <link href="https://nb25877.github.io/feed.xml" rel="self" />
     <link href="https://nb25877.github.io" />
-    <updated>2026-01-30T10:10:46+04:00</updated>
+    <updated>2026-01-30T14:22:26+04:00</updated>
     <author>
         <name>Nikunj Bhalotia</name>
     </author>
@@ -20,67 +20,47 @@
         <updated>2026-01-22T15:32:46+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    Based on Kumar (2024) and Corbari et al. (2024) 1. What are some of the main vendor lock-in issues the authors identify? How would you&hellip;
+                    Based on Kumar (2024) and Corbari et al. (2024) According to Kumar (2024), vendor lock-in manifests primarily through Technical and Organizational obstacles. Mitigation Strategies: To&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
                 <!-- wp:heading -->
-<h2 class="wp-block-heading">Based on Kumar (2024) and Corbari et al. (2024)</h2>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p><strong>1. What are some of the main vendor lock-in issues the authors identify? How would you mitigate them?</strong> According to Kumar (2024), vendor lock-in manifests primarily through <strong>Technical</strong> and <strong>Organizational</strong> obstacles.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
+<p class="wp-block-heading"><strong>Based on Kumar (2024) and Corbari et al. (2024)</strong></p>
+<!-- /wp:heading --><!-- wp:paragraph -->
+<h2><strong>1. What are some of the main vendor lock-in issues the authors identify? How would you mitigate them?</strong></h2>
+<p>According to Kumar (2024), vendor lock-in manifests primarily through <strong>Technical</strong> and <strong>Organizational</strong> obstacles.</p>
+<!-- /wp:paragraph --><!-- wp:list -->
 <ul class="wp-block-list"><!-- wp:list-item -->
 <li><strong>Technical Issues:</strong> The use of proprietary APIs and non-standard data formats creates high switching costs. Once an organization integrates deeply with a specific cloud provider’s ecosystem (e.g., using AWS Lambda or proprietary databases), migrating to a different DR provider becomes technically prohibitive due to compatibility issues.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
+<!-- /wp:list-item --> <!-- wp:list-item -->
 <li><strong>Organizational/Legal Issues:</strong> Restrictive contracts and the lack of interoperability standards further bind organizations to a single vendor.</li>
 <!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
+<!-- /wp:list --><!-- wp:paragraph -->
 <p><strong>Mitigation Strategies:</strong> To mitigate these risks, I would recommend a <strong>Multi-Cloud Strategy</strong> combined with <strong>Containerization</strong> (e.g., Docker/Kubernetes). By abstracting the application layer from the underlying infrastructure, organizations can move workloads between providers with minimal friction. Additionally, enforcing the use of <strong>Open Standards</strong> and avoiding proprietary PaaS (Platform as a Service) features where possible ensures that the DR solution remains portable.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>2. What are some security concerns with the modern cloud? How can these be mitigated?</strong> A major security concern in modern cloud environments is the <strong>loss of visibility and control</strong> over the underlying infrastructure. However, a more subtle but critical concern identified by Corbari et al. (2024) is the <strong>complexity of dependencies</strong>. In complex cloud environments, it is difficult to identify exactly which assets are critical to a specific business function. If a DR plan fails to account for a hidden dependency (e.g., an external authentication service), the recovery will fail.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
+<!-- /wp:paragraph --><!-- wp:paragraph -->
+<h2><strong>2. What are some security concerns with the modern cloud? How can these be mitigated?</strong></h2>
+<p>A major security concern in modern cloud environments is the <strong>loss of visibility and control</strong> over the underlying infrastructure. However, a more subtle but critical concern identified by Corbari et al. (2024) is the <strong>complexity of dependencies</strong>. In complex cloud environments, it is difficult to identify exactly which assets are critical to a specific business function. If a DR plan fails to account for a hidden dependency (e.g., an external authentication service), the recovery will fail.</p>
+<!-- /wp:paragraph --><!-- wp:paragraph -->
 <p><strong>Mitigation Strategies:</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
+<!-- /wp:paragraph --><!-- wp:list -->
 <ul class="wp-block-list"><!-- wp:list-item -->
 <li><strong>Mission Thread Analysis (MTA):</strong> I would apply the framework proposed by Corbari et al. (2024) to map the "Mission Relevant Cyber Terrain." This process involves tracing a specific operational thread (e.g., "Process Customer Payment") end-to-end to identify every critical node and link.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
+<!-- /wp:list-item --> <!-- wp:list-item -->
 <li><strong>Shared Responsibility Awareness:</strong> Organizations must clearly define where the vendor's security responsibility ends and theirs begins, particularly regarding data encryption and access control.</li>
 <!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p><strong>References</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
+<!-- /wp:list --><!-- wp:paragraph -->
+<h2><strong>References</strong></h2>
+<!-- /wp:paragraph --><!-- wp:list -->
 <ul class="wp-block-list"><!-- wp:list-item -->
 <li>Corbari, G.I., Khatod, N., Popiak, J.F. and Sinclair, P. (2024) ‘Mission Thread Analysis: Establishing a Common Framework’, <em>The Cyber Defense Review</em>, 9(1), pp. 37–54.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
+<!-- /wp:list-item --> <!-- wp:list-item -->
 <li>Kumar, A. (2024) <em>Cloud Vendor Lock-In: Identify, Strategies and Mitigate</em>. Seminar Paper, Julius-Maximilians-Universität Würzburg.</li>
 <!-- /wp:list-item --></ul>
 <!-- /wp:list -->
-
+<p> </p>
 <!-- wp:paragraph -->
-<p></p>
+<p> </p>
 <!-- /wp:paragraph -->
             ]]>
         </content>
