@@ -20,7 +20,7 @@
         <updated>2026-01-22T15:32:46+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    Based on Kumar (2024) and Corbari et al. (2024) 1. What are some of the main vendor lock-in issues the authors identify? How would you mitigate them? According to Kumar (2024), vendor lock-in manifests primarily through Technical and Organizational obstacles. Mitigation Strategies: To mitigate these&hellip;
+                    Based on Kumar (2024) and Corbari et al. (2024) 1. What are some of the main vendor lock-in issues the authors identify? How would you&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -96,7 +96,7 @@
         <updated>2026-01-22T14:27:29+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    1. What are the main challenges in modelling and evaluating the outcomes of Social Engineering Threats (SETs), and how does this study address them? The primary challenge in modelling SETs is the inherent unpredictability of human behavior, which makes rigorous mathematical evaluation difficult. Unlike technical&hellip;
+                    1. What are the main challenges in modelling and evaluating the outcomes of Social Engineering Threats (SETs), and how does this study address them? The&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -170,7 +170,7 @@
         <updated>2026-01-22T13:21:55+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    I used Allen Downey’s ThinkBayes2 library to practice Diachronic Bayes, the process of updating a hypothesis (H) based on new data (D). Description: This script adapts the 'Think Bayes' methodology to a security context. It updates the probability of a specific threat (Hypothesis) being active&hellip;
+                    I used Allen Downey’s ThinkBayes2 library to practice Diachronic Bayes, the process of updating a hypothesis (H) based on new data (D). Description: This script&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -284,7 +284,7 @@ for hypo, prob in risk_model.hypotheses.items():
         <updated>2026-01-22T12:56:07+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    To understand how to model risks with high variance, I developed a Python script using numpy and pandas to run a Monte Carlo simulation. Instead of relying on a single "average" prediction for future risk exposure (e.g., potential financial loss), the simulation generated 1,000 random&hellip;
+                    To understand how to model risks with high variance, I developed a Python script using numpy and pandas to run a Monte Carlo simulation. Instead&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -374,7 +374,7 @@ print(f&#034;5% Confidence Best Case: £{best_case:,.2f}&#034;)
         <updated>2026-01-20T15:23:18+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    1. What is the specific aspect of GDPR that your case study addresses? This case addresses Article 32 (Security of Processing) and Article 5(1)(f) (Integrity and Confidentiality). The case involved a law firm where a staff member fell victim to a social engineering attack (phishing),&hellip;
+                    1. What is the specific aspect of GDPR that your case study addresses? This case addresses Article 32 (Security of Processing) and Article 5(1)(f) (Integrity&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -432,7 +432,7 @@ print(f&#034;5% Confidence Best Case: £{best_case:,.2f}&#034;)
         <updated>2026-01-20T15:02:47+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    Based on Jbair, M., Ahmad, B., Maple, C. and Harrison, R. (2022) 1. What are the key elements and interdependencies in a cyber-physical system that must be captured in a comprehensive threat model? A comprehensive threat model for Cyber-Physical Systems (CPS) must move beyond simple&hellip;
+                    Based on Jbair, M., Ahmad, B., Maple, C. and Harrison, R. (2022) 1. What are the key elements and interdependencies in a cyber-physical system that&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -514,7 +514,7 @@ print(f&#034;5% Confidence Best Case: £{best_case:,.2f}&#034;)
         <updated>2026-01-19T16:58:46+04:00</updated>
             <summary type="html">
                 <![CDATA[
-                    Based on Kalogiannidis et al. (2024) 1. How does NLP improve the efficiency and accuracy of risk assessment processes? Natural Language Processing (NLP) fundamentally shifts risk assessment from a manual, labor-intensive process to an automated one capable of handling vast datasets. Kalogiannidis et al. (2024)&hellip;
+                    Based on Kalogiannidis et al. (2024) 1. How does NLP improve the efficiency and accuracy of risk assessment processes? Natural Language Processing (NLP) fundamentally shifts&hellip;
                 ]]>
             </summary>
         <content type="html">
