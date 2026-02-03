@@ -3,12 +3,157 @@
     <title>Nikunj Bhalotia E-Portfolio</title>
     <link href="https://nb25877.github.io/feed.xml" rel="self" />
     <link href="https://nb25877.github.io" />
-    <updated>2026-01-30T14:22:26+04:00</updated>
+    <updated>2026-02-03T09:37:25+04:00</updated>
     <author>
         <name>Nikunj Bhalotia</name>
     </author>
     <id>https://nb25877.github.io</id>
 
+    <entry>
+        <title>Navigating the Cloud Service Model Landscape</title>
+        <author>
+            <name>Nikunj Bhalotia</name>
+        </author>
+        <link href="https://nb25877.github.io/navigating-the-cloud-service-model-landscape/"/>
+        <id>https://nb25877.github.io/navigating-the-cloud-service-model-landscape/</id>
+
+        <updated>2026-02-02T17:12:00+04:00</updated>
+            <summary type="html">
+                <![CDATA[
+                    As organisations move away from on-premises IT, it is important to understand cloud service models. Choosing between IaaS, PaaS, and SaaS is not just a&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p class="p1">As organisations move away from on-premises IT, it is important to understand cloud service models. Choosing between IaaS, PaaS, and SaaS is not just a technical decision. It is a strategic one. This choice affects how much control an organisation has, who is responsible for security, and how quickly services can be delivered. The main difference between these models is the shared responsibility model. It explains which security tasks are handled by the cloud provider and which remain the responsibility of the customer.</p>
+<h2><strong>1. Core Differences Between IaaS, PaaS, and SaaS</strong></h2>
+<h3><strong>Infrastructure as a Service (IaaS)</strong></h3>
+<p class="p1">IaaS provides basic computing resources such as virtual machines, storage, and networking. The cloud provider secures the physical data centres and the underlying infrastructure, while the customer builds and manages everything above this layer. This includes the operating system, middleware, applications, and data. IaaS offers the highest level of control and flexibility, but it also comes with the greatest operational effort and security responsibility for the customer</p>
+<p class="p1">Examples include <span class="s1">Amazon Web Services</span> EC2, <span class="s1">Microsoft Azure</span> Virtual Machines, and <span class="s1">Google Cloud</span> Compute Engine (AWS, 2023; Microsoft, 2024).</p>
+<h3><strong>Platform as a Service (PaaS)</strong></h3>
+<p class="p1">PaaS removes the need to manage servers and operating systems. It provides a managed environment where applications can be built and deployed quickly. The customer focuses on application code and data, while the cloud provider manages the platform, runtime, and operating system, including patching and maintenance. This model improves developer productivity and reduces setup time. Security responsibilities are shared, with the customer responsible for securing the application and its data.</p>
+<p class="p1">Common examples include Google App Engine, AWS Elastic Beanstalk, and Heroku (Google, 2024; AWS, 2023).</p>
+<h3><strong>Software as a Service (SaaS)</strong></h3>
+<p class="p1">SaaS delivers ready to use applications over the internet that users access through a web browser or client application. The cloud provider manages the entire technology stack, including infrastructure, platforms, and application updates. The customer focuses on managing users, access controls, and how data is used within the service. SaaS provides the fastest time to value and requires the least operational effort. Customisation is limited, but reliability and scalability are typically high.</p>
+<p class="p1">Examples include Microsoft 365, Salesforce, and Slack (Microsoft, 2024).</p>
+<h2><strong>2. Organisational Impact and Strategic Choice</strong></h2>
+<p class="p1">Each service model shifts responsibility and risk.</p>
+<table style="width: 100%;">
+<thead>
+<tr>
+<th style="width: 14.55%;">
+<p class="p1"><strong>Factor</strong></p>
+</th>
+<th style="width: 30.2431%;">
+<p class="p1"><strong>IaaS</strong></p>
+</th>
+<th style="width: 27.2468%;">
+<p class="p1"><strong>PaaS</strong></p>
+</th>
+<th style="width: 27.9601%;">
+<p class="p1"><strong>SaaS</strong></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 14.55%;">
+<p class="p1">Control</p>
+</td>
+<td style="width: 30.2431%;">
+<p class="p1">Highest level of control</p>
+</td>
+<td style="width: 27.2468%;">
+<p class="p1">Limited to application</p>
+</td>
+<td style="width: 27.9601%;">
+<p class="p1">Minimal control</p>
+</td>
+</tr>
+<tr>
+<td style="width: 14.55%;">
+<p class="p1">Cost</p>
+</td>
+<td style="width: 30.2431%;">
+<p class="p1">Lower capital cost, higher skills cost</p>
+</td>
+<td style="width: 27.2468%;">
+<p class="p1">Balanced cost model</p>
+</td>
+<td style="width: 27.9601%;">
+<p class="p1">Predictable subscription cost</p>
+</td>
+</tr>
+<tr>
+<td style="width: 14.55%;">
+<p class="p1">Speed</p>
+</td>
+<td style="width: 30.2431%;">
+<p class="p1">Slowest to deploy</p>
+</td>
+<td style="width: 27.2468%;">
+<p class="p1">Faster development</p>
+</td>
+<td style="width: 27.9601%;">
+<p class="p1">Immediate availability</p>
+</td>
+</tr>
+<tr>
+<td style="width: 14.55%;">
+<p class="p1">Security</p>
+</td>
+<td style="width: 30.2431%;">
+<p class="p1">Customer secures OS and above</p>
+</td>
+<td style="width: 27.2468%;">
+<p class="p1">Shared at application level</p>
+</td>
+<td style="width: 27.9601%;">
+<p class="p1">Vendor secures most layers</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="p1">In IaaS, security misconfigurations are a common risk.</p>
+<p class="p1">In PaaS, insecure code becomes the primary threat.</p>
+<p class="p1">In SaaS, identity and access management are the main concerns (NIST, 2023)</p>
+<h2><strong>3. Why Organisations Choose Different Models</strong></h2>
+<p class="p1">Organisations choose PaaS when software development is central to their business because it enables faster application delivery without the overhead of managing infrastructure. SaaS is commonly used for standard business functions such as email, HR, and collaboration tools, as it removes routine operational work and reduces maintenance effort. IaaS remains important for legacy systems and regulated workloads, where greater control is required to meet specific compliance, security, or architectural needs.</p>
+<h2><strong>References</strong></h2>
+<p class="p1">Amazon Web Services (2023) <i>Shared Responsibility Model</i>. Available at: https://aws.amazon.com/compliance/shared-responsibility-model</p>
+<p class="p1">Google Cloud (2024) <i>PaaS overview and responsibilities</i>. Available at: https://cloud.google.com/learn/paas</p>
+<p class="p1">Microsoft (2024) <i>Microsoft cloud shared responsibility model</i>. Available at: https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility</p>
+<p class="p1">NIST (2023) <i>SP 800-210: Cloud Computing Security Considerations</i>. National Institute of Standards and Technology. Available at: https://csrc.nist.gov/publications/detail/sp/800-210/final</p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>AWS vs Google Cloud - Comparison and Contrast</title>
+        <author>
+            <name>Nikunj Bhalotia</name>
+        </author>
+        <link href="https://nb25877.github.io/aws-vs-google-cloud-comparison-and-contrast/"/>
+        <id>https://nb25877.github.io/aws-vs-google-cloud-comparison-and-contrast/</id>
+
+        <updated>2026-02-02T16:02:30+04:00</updated>
+            <summary type="html">
+                <![CDATA[
+                    Amazon Web Services and Google Cloud Platform (GCP) are two leading public cloud providers. Both offer computing, storage, networking, and managed services. Both support scaling and&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>Amazon Web Services and Google Cloud Platform (GCP) are two leading public cloud providers. Both offer computing, storage, networking, and managed services. Both support scaling and on-demand access to resources (Borra, 2024). </p>
+<p>AWS is known for its broad service catalogue and flexibility. It has many products for virtual machines, databases, analytics, and application services. This means users can select from a range of architectural design options. AWS supports complex enterprise use cases well because it has more regions and service maturity (Borra, 2024). </p>
+<p>GCP offers a robust platform for data analytics and cloud native development. It integrates well with Kubernetes and container workloads. Google’s services like BigQuery and Kubernetes Engine are easy to use and scale, making GCP suitable for modern applications and data-heavy workloads (Borra, 2024). </p>
+<p>Pricing models differ between them. AWS uses pay-as-you-go billing with many discount plans such as Reserved Instances and Savings Plans (CloudZero, 2025). GCP uses automatic sustained use and committed use discounts that can make costs more predictable for long-running workloads (CloudZero, 2025). </p>
+<p>In summary, AWS offers greater flexibility, a wide range of services, and robust enterprise support. GCP provides simpler pricing and strengthens analytics, machine learning, and container-based use cases. The choice depends on technical needs, budget, and expertise.</p>
+<p><strong>References:</strong></p>
+<p>Borra, P., 2024. <i>Comparison and Analysis of Leading Cloud Service Providers (AWS, Azure and GCP)</i>, International Journal of Advanced Research in Engineering and Technology, 15(3), pp.266-278. Available at https://iaeme.com/MasterAdmin/Journal_uploads/IJARET/VOLUME_15_ISSUE_3/IJARET_15_03_023.pdf</p>
+<p>CloudZero, 2025. <i>AWS Vs. GCP: Which Platform Offers Better Pricing?</i>.Available at: https://cast.ai/blog/cloud-pricing-comparison/</p>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>DR Solutions Design and Review</title>
         <author>
