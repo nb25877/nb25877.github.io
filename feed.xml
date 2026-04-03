@@ -3,12 +3,128 @@
     <title>Nikunj Bhalotia E-Portfolio</title>
     <link href="https://nb25877.github.io/feed.xml" rel="self" />
     <link href="https://nb25877.github.io" />
-    <updated>2026-04-03T10:57:43+04:00</updated>
+    <updated>2026-04-03T11:30:16+04:00</updated>
     <author>
         <name>Nikunj Bhalotia</name>
     </author>
     <id>https://nb25877.github.io</id>
 
+    <entry>
+        <title>Security Audit of an OpenStack Cloud Application Using OpenVAS</title>
+        <author>
+            <name>Nikunj Bhalotia</name>
+        </author>
+        <link href="https://nb25877.github.io/security-audit-of-an-openstack-cloud-application-using-openvas/"/>
+        <id>https://nb25877.github.io/security-audit-of-an-openstack-cloud-application-using-openvas/</id>
+
+        <updated>2026-04-03T11:28:59+04:00</updated>
+            <summary type="html">
+                <![CDATA[
+                    1. Introduction This post presents the findings from a mock security audit of a cloud application deployed on OpenStack. The audit uses OpenVAS (Open Vulnerability&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">1. Introduction</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">This post presents the findings from a mock security audit of a cloud application deployed on OpenStack. The audit uses OpenVAS (Open Vulnerability Assessment Scanner) to identify vulnerabilities across the cloud infrastructure. Each finding is mapped to relevant ISO/IEC 27001 controls, and mitigation strategies are recommended.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenStack provides a flexible open-source platform for private and hybrid cloud deployments, but this flexibility also means that security responsibility falls heavily on the operator. Regular vulnerability assessments help ensure that misconfigurations and known weaknesses are identified before they can be exploited (OpenStack Foundation, 2023).</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">2. Audit Scope and Methodology</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Target systems:</strong> OpenStack controller node, two compute nodes hosting a multi-tier web application, and associated networking and storage services.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Scanning approach:</strong> OpenVAS was configured to run both authenticated and unauthenticated scans across the internal management network and the tenant application network. Authenticated scans used SSH credentials on the compute nodes to assess package-level vulnerabilities. Scan results were classified using CVSS v3 severity scores and mapped to ISO/IEC 27001:2022 controls.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">3. Vulnerabilities Identified</h2>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">3.1 Unrestricted API Access to Keystone Endpoints</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Severity:</strong> High</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The Keystone identity service API was accessible from the tenant network without IP restrictions. OpenVAS identified the admin API endpoint responding to unauthenticated requests from any network segment.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Risk:</strong> An attacker with access to the tenant network could attempt token-based attacks or enumerate user accounts through the exposed admin API.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Mitigation:</strong> Restrict Keystone admin API access to the management network only using Neutron security groups and firewall rules. Separate the admin and public API endpoints onto different network interfaces.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>ISO/IEC 27001 Control:</strong> A.8.20 (Network security)</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">3.2 Missing Disk Encryption on Compute Nodes</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Severity:</strong> High</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenVAS flagged that the block storage volumes attached to compute instances were not using encryption. Data written to Cinder volumes was stored in plaintext on the underlying storage backend.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Risk:</strong> If physical storage media is compromised or decommissioned without proper wiping, sensitive application data could be recovered.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Mitigation:</strong> Enable Cinder volume encryption using LUKS with keys managed through Barbican (OpenStack Key Manager). Apply encryption as the default for all new volumes through Cinder volume type policies.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>ISO/IEC 27001 Control:</strong> A.8.24 (Use of cryptography)</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">3.3 Stale User Accounts in Keystone</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Severity:</strong> Medium</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The authenticated scan identified several Keystone user accounts that had not been used in over 90 days but retained active project roles, including two accounts with admin-level privileges.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Risk:</strong> Dormant accounts with elevated privileges are a common target for credential-based attacks. If compromised, they provide an attacker with legitimate access that is difficult to detect.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Mitigation:</strong> Implement an account lifecycle policy that disables accounts after 60 days of inactivity. Conduct quarterly access reviews to remove unnecessary role assignments. Where possible, integrate Keystone with a centralised identity provider to manage account provisioning and deprovisioning.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>ISO/IEC 27001 Control:</strong> A.5.18 (Access rights)</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">3.4 Outdated OpenStack Services</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Severity:</strong> Medium</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Several OpenStack services on the controller node were running versions two releases behind the current stable branch. OpenVAS matched these against known CVEs including vulnerabilities in the Nova API and Neutron L3 agent.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Risk:</strong> Known vulnerabilities in outdated services can be exploited using publicly available tools and scripts.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Mitigation:</strong> Establish a patch management schedule aligned with OpenStack release cycles. Test updates in a staging environment before applying to production. Subscribe to the OpenStack Security Advisories (OSSA) mailing list for early notification of critical patches.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>ISO/IEC 27001 Control:</strong> A.8.8 (Management of technical vulnerabilities)</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">3.5 No Centralised Log Aggregation</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Severity:</strong> Medium</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenStack services were writing logs locally on each node. There was no centralised log collection or correlation, and no alerting for security-relevant events such as repeated authentication failures or security group modifications.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Risk:</strong> Without centralised logging, detecting and investigating security incidents becomes slow and unreliable. Attackers can also tamper with local log files to cover their tracks.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Mitigation:</strong> Deploy a centralised logging solution such as ELK (Elasticsearch, Logstash, Kibana) or Graylog. Forward all OpenStack service logs and system audit logs to the central store. Configure alert rules for high-priority events including failed Keystone authentications and changes to security group rules.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>ISO/IEC 27001 Control:</strong> A.8.15 (Logging)</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">4. Summary of Findings</h2>
+<div class="overflow-x-auto w-full px-2 mb-6">
+<table class="min-w-full border-collapse text-sm leading-[1.7] whitespace-normal">
+<thead class="text-left">
+<tr>
+<th class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold" scope="col">#</th>
+<th class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold" scope="col">Finding</th>
+<th class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold" scope="col">Severity</th>
+<th class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold" scope="col">ISO 27001 Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">1</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Unrestricted Keystone API access</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">High</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">A.8.20</td>
+</tr>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">2</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Missing disk encryption</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">High</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">A.8.24</td>
+</tr>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">3</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Stale user accounts</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Medium</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">A.5.18</td>
+</tr>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">4</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Outdated OpenStack services</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Medium</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">A.8.8</td>
+</tr>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">5</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">No centralised logging</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Medium</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">A.8.15</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">5. Compliance Recommendations</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">To improve alignment with ISO/IEC 27001:</p>
+<ol class="[li_&amp;]:mb-0 [li_&amp;]:mt-1 [li_&amp;]:gap-1 [&amp;:not(:last-child)_ul]:pb-1 [&amp;:not(:last-child)_ol]:pb-1 list-decimal flex flex-col gap-1 pl-8 mb-3">
+<li class="whitespace-normal break-words pl-2">Establish a formal vulnerability management process with scheduled OpenVAS scans.</li>
+<li class="whitespace-normal break-words pl-2">Implement encryption for data at rest across all storage services.</li>
+<li class="whitespace-normal break-words pl-2">Enforce account lifecycle management with periodic access reviews.</li>
+<li class="whitespace-normal break-words pl-2">Maintain a patching schedule tied to OpenStack security advisories.</li>
+<li class="whitespace-normal break-words pl-2">Deploy centralised logging with automated alerting for security events.</li>
+</ol>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">6. Conclusion</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">This audit identified five vulnerabilities ranging from high to medium severity. The findings highlight common security gaps in OpenStack deployments, particularly around API exposure, encryption, identity management, patching, and logging. Addressing these issues through the recommended mitigations would significantly strengthen the security posture and move the environment closer to compliance with ISO/IEC 27001.</p>
+<h6 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">References</h6>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Greenbone Networks (2024) <em>OpenVAS: Open Vulnerability Assessment Scanner</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://www.openvas.org/">https://www.openvas.org/</a></p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">ISO (2022) <em>ISO/IEC 27001:2022 Information security management systems</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://www.iso.org/standard/27001">https://www.iso.org/standard/27001</a></p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenStack Foundation (2023) <em>OpenStack Security Guide</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://docs.openstack.org/security-guide/">https://docs.openstack.org/security-guide/</a></p>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>Setting Up a Local Kubernetes Cluster with Minikube</title>
         <author>
@@ -719,64 +835,6 @@ print(f&#034;5% Confidence Best Case: £{best_case:,.2f}&#034;)
 
 <!-- wp:paragraph -->
 <p>Fizell, Z. (2022) <em>How to Create a Monte Carlo Simulation using Python</em>. Available at: <a href="https://towardsdatascience.com/how-to-create-a-monte-carlo-simulation-using-python-c24634a0978a/" target="_blank" rel="noreferrer noopener">https://towardsdatascience.com/how-to-create-a-monte-carlo-simulation-using-python-c24634a0978a/</a></p>
-<!-- /wp:paragraph -->
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>GDPR Case Study Analysis: Social Engineering Attack</title>
-        <author>
-            <name>Nikunj Bhalotia</name>
-        </author>
-        <link href="https://nb25877.github.io/gdpr-case-study-analysis-social-engineering-attack/"/>
-        <id>https://nb25877.github.io/gdpr-case-study-analysis-social-engineering-attack/</id>
-
-        <updated>2026-01-20T15:23:18+04:00</updated>
-            <summary type="html">
-                <![CDATA[
-                    1. What is the specific aspect of GDPR that your case study addresses? This case addresses Article 32 (Security of Processing) and Article 5(1)(f) (Integrity&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <!-- wp:paragraph -->
-<p><strong>1. What is the specific aspect of GDPR that your case study addresses?</strong> This case addresses <strong>Article 32 (Security of Processing)</strong> and <strong>Article 5(1)(f) (Integrity and Confidentiality)</strong>. The case involved a law firm where a staff member fell victim to a social engineering attack (phishing), allowing a malicious actor to install malware and defraud a client. The core GDPR issue was the data controller's failure to implement "appropriate technical and organisational measures" to ensure a level of security appropriate to the risk. Specifically, the firm relied on a cloud email service without enforcing basic industry-standard security settings, such as strong passwords or Multi-Factor Authentication (MFA).</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>2. How was it resolved?</strong> Upon discovering the breach, the firm immediately commissioned a full forensic investigation to determine the root cause and extent of the compromise. Based on the findings, they implemented enhanced technical security measures (specifically enabling MFA) and conducted mandatory cyber security and data protection training for all staff. The DPC concluded the case by requesting updates on these implementations to ensure the risk of reoccurrence was mitigated.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>3. If this was your organisation, what steps would you take as an Information Security Manager to mitigate the issue?</strong> As an Information Security Manager, I would align our mitigation strategy with <strong>ISO/IEC 27001</strong> standards to ensure compliance with GDPR Article 32:</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li><strong>Implement Technical Controls (ISO 27001 A.9):</strong> I would mandate <strong>Multi-Factor Authentication (MFA)</strong> for all external access, particularly for cloud-based email services. Reliance on passwords alone is no longer considered "appropriate" for protecting sensitive client data.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
-<li><strong>Security Awareness Training (ISO 27001 A.7.2.2):</strong> I would implement a continuous "phishing simulation" program rather than one-off training. This tests employee resilience to social engineering in real-time.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
-<li><strong>Vendor Risk Management:</strong> Since the firm used a third-party cloud provider, I would review the shared responsibility model to ensure we are not assuming default settings are secure. We must configure the "tenant" side of the cloud service to meet our specific risk appetite.</li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p><strong>References</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li>Data Protection Commission (2023) <em>Case Studies: May 2018 – May 2023</em>. Available at: <a href="https://dataprotection.ie/sites/default/files/uploads/2024-08/DPC-CS-2023-EN-V2.pdf">https://dataprotection.ie/sites/default/files/uploads/2024-08/DPC-CS-2023-EN-V2.pdf</a></li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p></p>
 <!-- /wp:paragraph -->
             ]]>
         </content>
