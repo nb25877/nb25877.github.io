@@ -3,12 +3,71 @@
     <title>Nikunj Bhalotia E-Portfolio</title>
     <link href="https://nb25877.github.io/feed.xml" rel="self" />
     <link href="https://nb25877.github.io" />
-    <updated>2026-04-03T10:40:36+04:00</updated>
+    <updated>2026-04-03T10:57:43+04:00</updated>
     <author>
         <name>Nikunj Bhalotia</name>
     </author>
     <id>https://nb25877.github.io</id>
 
+    <entry>
+        <title>Setting Up a Local Kubernetes Cluster with Minikube</title>
+        <author>
+            <name>Nikunj Bhalotia</name>
+        </author>
+        <link href="https://nb25877.github.io/setting-up-a-local-kubernetes-cluster-with-minikube/"/>
+        <id>https://nb25877.github.io/setting-up-a-local-kubernetes-cluster-with-minikube/</id>
+
+        <updated>2026-04-03T10:57:43+04:00</updated>
+            <summary type="html">
+                <![CDATA[
+                    Introduction As someone who works with Azure Container Apps daily, I have been using managed container orchestration without needing to think much about the underlying&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Introduction</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">As someone who works with Azure Container Apps daily, I have been using managed container orchestration without needing to think much about the underlying Kubernetes layer. This activity gave me the opportunity to set up a local Kubernetes cluster using Minikube and get hands-on with the core components that platforms like Azure abstract away.</p>
+<h2>What is Minikube?</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Minikube is a lightweight tool that runs a single-node Kubernetes cluster on your local machine. It is designed for learning and development purposes, allowing you to experiment with Kubernetes without needing a cloud subscription or a multi-node setup. It supports multiple container runtimes including Docker and containerd, and runs inside a virtual machine or container on your workstation.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Setting Up the Cluster</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">I set this up on my Dell XPS 17 running Windows with Docker Desktop already installed. The steps were straightforward.</p>
+<p>First, I installed Minikube using the Windows installer:</p>
+<pre class="language-batch"><code># Download and install Minikube
+winget install Kubernetes.minikube</code></pre>
+<p>Then I started the cluster using Docker as the driver:</p>
+<pre class="language-batch"><code># Start Minikube with Docker driver
+minikube start --driver=docker
+
+# Verify the cluster is running
+minikube status
+
+# Check the node is ready
+kubectl get nodes</code></pre>
+<p>The output confirmed a single node running with the roles of control-plane and master. From here I deployed a simple Nginx web server to test the cluster:</p>
+<pre class="language-batch"><code># Create a deployment
+kubectl create deployment nginx-test --image=nginx
+
+# Expose it as a service
+kubectl expose deployment nginx-test --type=NodePort --port=80
+
+# Get the URL to access it
+minikube service nginx-test --url</code></pre>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">This gave me a local URL where I could access the Nginx welcome page in my browser, confirming the full pipeline was working: cluster running, pod scheduled, service exposed.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">I also explored the Minikube dashboard, which provides a web-based UI to view deployments, pods, services, and logs:</p>
+<pre class="language-batch"><code>minikube dashboard</code></pre>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Setting up Minikube helped me understand what is happening beneath the managed services I use in production. When I deploy containers to Azure Container Apps, Azure handles the Kubernetes orchestration behind the scenes. Working with Minikube directly exposed the building blocks: nodes, pods, deployments, services, and the kubectl command-line interface that ties them together.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The key concepts I took away from this exercise are worth noting. Pods are the smallest deployable unit in Kubernetes, wrapping one or more containers. Deployments manage the desired state of pods, handling scaling and updates automatically. Services provide stable networking endpoints so that other applications or users can reach the running pods. These are the same primitives that power production Kubernetes clusters at scale, just running locally on a single node.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">One thing that stood out was how quickly Minikube lets you iterate. I could create a deployment, break it on purpose, watch Kubernetes restart the failed pod, and see self-healing in action. This is something I rely on in production with Azure but had never seen at the Kubernetes level directly.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">From an MSP perspective, understanding these fundamentals matters. Not all clients use managed services. Some run their own Kubernetes clusters on-premises or in hybrid setups, and being able to speak to the core concepts makes a difference when designing solutions or troubleshooting issues.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Conclusion</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Minikube is a practical tool for learning Kubernetes without the cost or complexity of a cloud-hosted cluster. This exercise bridged the gap between the managed container services I use professionally and the orchestration layer that powers them. Going forward, I plan to use Minikube as a local testing environment before pushing container configurations to Azure.</p>
+<h6 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">References</h6>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Kubernetes (2024) <em>Minikube: Local Kubernetes</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://minikube.sigs.k8s.io/docs/">https://minikube.sigs.k8s.io/docs/</a></p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Kubernetes (2024) <em>kubectl Cheat Sheet</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">https://kubernetes.io/docs/reference/kubectl/cheatsheet/</a></p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Nigel, P. and Pushkar, J. (2017) <em>The Kubernetes Book</em>. Leanpub.</p>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>Automating Cloud Deployment with Bash: A Real-World Azure CLI Script</title>
         <author>
@@ -713,88 +772,6 @@ print(f&#034;5% Confidence Best Case: £{best_case:,.2f}&#034;)
 <!-- wp:list -->
 <ul class="wp-block-list"><!-- wp:list-item -->
 <li>Data Protection Commission (2023) <em>Case Studies: May 2018 – May 2023</em>. Available at: <a href="https://dataprotection.ie/sites/default/files/uploads/2024-08/DPC-CS-2023-EN-V2.pdf">https://dataprotection.ie/sites/default/files/uploads/2024-08/DPC-CS-2023-EN-V2.pdf</a></li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>Threat Modelling for Industrial Cyber-Physical Systems</title>
-        <author>
-            <name>Nikunj Bhalotia</name>
-        </author>
-        <link href="https://nb25877.github.io/threat-modelling-for-industrial-cyber-physical-systems/"/>
-        <id>https://nb25877.github.io/threat-modelling-for-industrial-cyber-physical-systems/</id>
-
-        <updated>2026-01-20T15:02:47+04:00</updated>
-            <summary type="html">
-                <![CDATA[
-                    Based on Jbair, M., Ahmad, B., Maple, C. and Harrison, R. (2022) 1. What are the key elements and interdependencies in a cyber-physical system that&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <!-- wp:paragraph -->
-<p>Based on Jbair, M., Ahmad, B., Maple, C. and Harrison, R. (2022)</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>1. What are the key elements and interdependencies in a cyber-physical system that must be captured in a comprehensive threat model?</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>A comprehensive threat model for Cyber-Physical Systems (CPS) must move beyond simple asset lists to capture the dynamic relationships between physical and digital components. Jbair et al. (2022) propose a data model that links ten critical parameters: Threat Actors (insider/outsider), Assets (classified by the Purdue Model), Vulnerabilities, Threats (using STRIDE), and Cyber-Attacks (using ICS ATT&amp;CK tactics).</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Critically, these elements are interdependent: a <strong>Threat Actor</strong> exploits a <strong>Vulnerability</strong> via specific <strong>Tactics, Techniques, and Procedures (TTPs)</strong> to manipulate an <strong>Asset</strong>. The accuracy of the risk analysis depends on capturing these links because the <strong>Attack Impact</strong> varies depending on the asset's physical function (e.g., a PLC at Level 1 has a higher safety impact than a workstation at Level 4). Failing to map these interdependencies results in a "siloed" view that misses cascading physical risks.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>2. How can threat modelling help identify attack entry points and system vulnerabilities in cyber-physical energy systems?</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Threat modelling identifies entry points by mapping the "attack surface" exposed by the convergence of IT and OT (Operational Technology). By utilizing frameworks like ICS ATT&amp;CK, analysts can model specific attack trees—such as a "Man-in-the-Middle" attack on a PLC or a "Denial of Service" on an HMI. This structured approach moves beyond ad-hoc vulnerability scanning to identify complex attack paths where an adversary might pivot from a corporate network (Level 4) to control systems (Level 1).</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>However, a major challenge is that traditional threat modelling tools are often "static" and do not integrate with the engineering tools used to build CPS. Jbair et al. (2022) highlight that existing methodologies often lack the ability to determine risk severity or provide a roadmap for mitigation, making it difficult to justify security investments to engineering stakeholders.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>3. How can scenario-specific metrics and risk assessment methodologies be used to prioritise vulnerabilities?</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>To effectively prioritize vulnerabilities, organizations must move from qualitative "guesswork" to quantitative metrics. The paper proposes a formulaic approach where Risk (R) is the product of the Attack Vector (AV) and Attack Likelihood (AL) (R = AV \times AL).</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li><strong>Attack Vector (AV):</strong> Calculated using the geometric mean of threat actor skills, threat exposure, and impact severity.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
-<li><strong>Attack Likelihood (AL):</strong> Derived from historical data of similar attacks in the sector (e.g., assessing if a specific malware strain is trending in the energy sector).</li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p>By applying these metrics to a <strong>Risk Heat Map</strong>, vulnerabilities can be classified from "Very Low" to "Very High." This allows security teams to automate the generation of <strong>Mitigation Controls</strong> (such as firmware monitoring or password enforcement) specifically for the highest-risk assets, ensuring that limited resources are targeted where they prevent the most significant physical and digital damage.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>References</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li>Jbair, M., Ahmad, B., Maple, C. and Harrison, R. (2022) ‘Threat modelling for industrial cyber physical systems in the era of smart manufacturing’, <em>Computers in Industry</em>, 137, p. 103611. Available at: <a href="https://doi.org/10.1016/j.compind.2022.103611" target="_blank" rel="noreferrer noopener">https://doi.org/10.1016/j.compind.2022.103611</a></li>
 <!-- /wp:list-item --></ul>
 <!-- /wp:list -->
 

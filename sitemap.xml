@@ -22,7 +22,7 @@
 </url>
 <url>
 <loc>https://nb25877.github.io/cloud-operations-and-management/</loc>
-<lastmod>2026-04-03T10:42:19+04:00</lastmod>
+<lastmod>2026-04-03T10:59:04+04:00</lastmod>
 </url>
 <url>
 <loc>https://nb25877.github.io/dr-solutions-design-and-review/</loc>
@@ -67,6 +67,10 @@
 <url>
 <loc>https://nb25877.github.io/security-and-risk-management/</loc>
 <lastmod>2026-01-30T12:25:42+04:00</lastmod>
+</url>
+<url>
+<loc>https://nb25877.github.io/setting-up-a-local-kubernetes-cluster-with-minikube/</loc>
+<lastmod>2026-04-03T10:57:43+04:00</lastmod>
 </url>
 <url>
 <loc>https://nb25877.github.io/terraform-superior-cloud-design-tool/</loc>
