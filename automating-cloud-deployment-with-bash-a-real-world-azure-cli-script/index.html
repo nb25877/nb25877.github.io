@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en-gb"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Automating Cloud Deployment with Bash: A Real-World Azure CLI Script - Nikunj Bhalotia E-Portfolio</title><meta name="description" content="Introduction This post presents a Bash script I wrote and use in production to automate the build and deployment of a multi-container application on Microsoft&hellip;"><meta name="generator" content="Publii Open-Source CMS for Static Site"><link rel="canonical" href="https://nb25877.github.io/automating-cloud-deployment-with-bash-a-real-world-azure-cli-script/"><link rel="alternate" type="application/atom+xml" href="https://nb25877.github.io/feed.xml" title="Nikunj Bhalotia E-Portfolio - RSS"><link rel="alternate" type="application/json" href="https://nb25877.github.io/feed.json" title="Nikunj Bhalotia E-Portfolio - JSON"><meta property="og:title" content="Automating Cloud Deployment with Bash: A Real-World Azure CLI Script"><meta property="og:site_name" content="Nikunj Bhalotia E-Portfolio"><meta property="og:description" content="Introduction This post presents a Bash script I wrote and use in production to automate the build and deployment of a multi-container application on Microsoft&hellip;"><meta property="og:url" content="https://nb25877.github.io/automating-cloud-deployment-with-bash-a-real-world-azure-cli-script/"><meta property="og:type" content="article"><link rel="stylesheet" href="https://nb25877.github.io/assets/css/style.css?v=75822c22f63d0dfe1d2ac7355538ed6e"><script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://nb25877.github.io/automating-cloud-deployment-with-bash-a-real-world-azure-cli-script/"},"headline":"Automating Cloud Deployment with Bash: A Real-World Azure CLI Script","datePublished":"2026-04-03T10:40+04:00","dateModified":"2026-04-03T10:40+04:00","description":"Introduction This post presents a Bash script I wrote and use in production to automate the build and deployment of a multi-container application on Microsoft&hellip;","author":{"@type":"Person","name":"Nikunj Bhalotia","url":"https://nb25877.github.io/authors/nikunj-bhalotia/"},"publisher":{"@type":"Organization","name":"Nikunj Bhalotia"}}</script><noscript><style>img[loading] {
+                    opacity: 1;
+                }</style></noscript></head><body class="post-template"><header class="top"><div class="top__logo"><a class="logo" href="https://nb25877.github.io/">Nikunj Bhalotia E-Portfolio</a></div><div class="top__links"><a href="https://github.com/nb25877" class="top__links-url" aria-label="GitHub" title="GitHub" target="_blank" rel="noopener"><svg height="24" width="24"><use xlink:href="https://nb25877.github.io/assets/svg/svg-map.svg#github"></use></svg></a></div><button class="navbar__toggle" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><span class="navbar__toggle-box"><span class="navbar__toggle-inner">Menu</span></span></button></header><main class="main post"><div class="main__left"><div class="main__left-inner"><div class="main__left-content"><article class="content"><header><h1 class="content__title">Automating Cloud Deployment with Bash: A Real-World Azure CLI Script</h1></header><div class="content__entry"><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Introduction</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">This post presents a Bash script I wrote and use in production to automate the build and deployment of a multi-container application on Microsoft Azure. The script provisions cloud resources using Azure CLI commands and is part of the deployment workflow for an MSP platform that runs on Azure Container Apps with images stored in Azure Container Registry (ACR).</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The full script is included below, followed by an explanation of how it works and why automation through scripting is important for cloud operations.</p><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">The Script</h2><div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code"><div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right"><div class="absolute right-0 h-8 px-2 items-center inline-flex z-10"><div class="relative"><div class="transition-all opacity-100 scale-100"> </div><div class="absolute inset-0 flex items-center justify-center"><div class="transition-all opacity-0 scale-50"><pre class="language-bash"><code>#!/usr/bin/env bash
+# Fast local deploy to Azure using ACR Tasks — no local Docker needed.
+# Source context is uploaded to ACR and built in the cloud.
+#
+# Usage:
+#   ./deploy-local.sh           — auto-detect changes and deploy affected containers
+#   ./deploy-local.sh --admin   — force admin only
+#   ./deploy-local.sh --portal  — force portal only
+#   ./deploy-local.sh --agent   — force agent only
+#   ./deploy-local.sh --all     — force everything
+#   ./deploy-local.sh --full    — force full rebuild including Go
+#   ./deploy-local.sh --dry-run — show what would deploy without doing it
+
+set -euo pipefail
+
+# Config
+ACR_NAME="acrnshield2"
+ACR="${ACR_NAME}.azurecr.io"
+IMAGE="${ACR}/mspcc"
+RESOURCE_GROUP="rg-nshield-prod"
+ADMIN_APP="ca-nshield-prod"
+PORTAL_APP="ca-nshield-portal"
+AGENT_APP="ca-nshield-agent"
+SHA_FILE=".last-deployed-sha"
+
+# Parse flags
+MODE="auto"
+DRY_RUN=false
+FORCE_FULL=false
+
+for arg in "$@"; do
+  case $arg in
+    --admin)   MODE="admin" ;;
+    --portal)  MODE="portal" ;;
+    --agent)   MODE="agent" ;;
+    --all)     MODE="all" ;;
+    --full)    FORCE_FULL=true; MODE="all" ;;
+    --dry-run) DRY_RUN=true ;;
+  esac
+done
+
+# Change detection using git diff
+detect_changes() {
+  local last_sha=""
+  if [ -f "$SHA_FILE" ]; then
+    last_sha=$(cat "$SHA_FILE")
+  fi
+
+  if [ -z "$last_sha" ]; then
+    echo "==&gt; No previous deploy SHA found"
+    CHANGED_BACKEND=true
+    CHANGED_FRONTEND=true
+    CHANGED_MIGRATIONS=true
+    return
+  fi
+
+  echo "==&gt; Detecting changes since last deploy (${last_sha:0:7}..HEAD)"
+  local files
+  files=$(git diff --name-only "$last_sha" HEAD 2&gt;/dev/null || true)
+  local uncommitted
+  uncommitted=$(git diff --name-only HEAD 2&gt;/dev/null || true)
+  local staged
+  staged=$(git diff --name-only --cached 2&gt;/dev/null || true)
+  files=$(printf '%s\n%s\n%s' "$files" "$uncommitted" "$staged" | sort -u | grep -v '^$' || true)
+
+  while IFS= read -r file; do
+    case "$file" in
+      src/db/migrations/*|src/db/seeds/*)  CHANGED_MIGRATIONS=true; CHANGED_BACKEND=true ;;
+      src/*)                                CHANGED_BACKEND=true ;;
+      apps/web/*)                           CHANGED_FRONTEND=true ;;
+      agents/rmm/*)                         CHANGED_AGENT=true ;;
+      package.json|package-lock.json)       CHANGED_DEPS=true ;;
+      Dockerfile)                           CHANGED_DOCKER=true ;;
+      *)                                    CHANGED_BACKEND=true ;;
+    esac
+  done &lt;&lt;&lt; "$files"
+}
+
+# Build in ACR and deploy to Azure Container Apps
+TAG="local-$(git rev-parse --short HEAD)-$(date +%s)"
+
+az acr build \
+  --registry "${ACR_NAME}" \
+  --image "mspcc:${TAG}" \
+  --image "mspcc:latest" \
+  .
+
+# Deploy to each container app as needed
+az containerapp update \
+  --name "${ADMIN_APP}" \
+  --resource-group "${RESOURCE_GROUP}" \
+  --image "${IMAGE}:${TAG}"
+
+git rev-parse HEAD &gt; "$SHA_FILE"
+echo "Done. Image: ${IMAGE}:${TAG}"</code></pre></div></div></div></div></div></div><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><em>Note: The script above is a simplified version. The full production script includes additional logic for selective deployment, agent builds, and dry-run mode.</em></p><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">How the Script Works</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The script automates the full build and deployment cycle for a cloud application running on Azure Container Apps. It starts by checking which parts of the codebase have changed since the last deployment. It does this by comparing the current Git HEAD against a stored SHA from the previous deploy. Based on the files that changed, it maps those changes to the correct containers. For example, changes to backend source files trigger an admin container rebuild, while frontend changes trigger both admin and portal container updates.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Once the targets are identified, the script builds a Docker image using Azure Container Registry (ACR) Tasks. This means the build happens in the cloud rather than on the local machine, which saves time and avoids the need for Docker to be installed locally. The built image is tagged with the Git commit hash and a timestamp for traceability.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">After the build completes, the script uses Azure CLI to update the relevant Azure Container Apps with the new image. It handles three separate container apps: admin, portal, and agent. Each one is only updated if its corresponding source files changed, which avoids unnecessary deployments.</p><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Why Scripting Matters for Cloud Operations</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Automation through scripting is essential for modern cloud operations for several reasons.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">First, it removes the risk of human error. Manual deployments require running multiple commands in the right order, which is easy to get wrong, especially under pressure. A script runs the same steps every time, exactly as defined.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Second, scripting saves time. What would take 15 to 20 minutes of manual work is reduced to a single command that completes in a few minutes. This is especially important when deploying frequently during development cycles.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Third, scripts provide a record of what happened. By storing the deployed SHA and tagging images with commit hashes, the script creates a clear audit trail. If something goes wrong, it is straightforward to identify which code was deployed and roll back.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Fourth, selective deployment based on change detection reduces cloud costs. Instead of rebuilding and redeploying everything on each change, the script only targets the containers that are actually affected. This reduces build time, network usage, and container restart overhead.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Finally, scripting supports collaboration. The deployment process is defined in code, stored in version control, and can be reviewed by the team. This is far more reliable than relying on documentation or tribal knowledge about how to deploy.</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">In summary, this script demonstrates how Bash and Azure CLI can be combined to automate cloud resource provisioning and deployment in a way that is repeatable, efficient, and traceable.</p><h6 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">References</h6><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Microsoft (2024) <em>Azure CLI documentation</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://learn.microsoft.com/en-us/cli/azure/">https://learn.microsoft.com/en-us/cli/azure/</a></p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Microsoft (2024) <em>Azure Container Apps overview</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://learn.microsoft.com/en-us/azure/container-apps/overview">https://learn.microsoft.com/en-us/azure/container-apps/overview</a></p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Microsoft (2024) <em>Azure Container Registry Tasks</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://learn.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview">https://learn.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview</a></p></div><footer><div class="content__footer-top"><div class="content__meta">by <a href="https://nb25877.github.io/authors/nikunj-bhalotia/" rel="author" title="Nikunj Bhalotia">Nikunj Bhalotia</a></div><div class="content__share"><button class="content__share-button js-content__share-button" aria-label="Share with"><svg width="24" height="24"><use xlink:href="https://nb25877.github.io/assets/svg/svg-map.svg#share"></use></svg></button><div class="content__share-popup js-content__share-popup"></div></div></div><div class="content__footer-bottom"></div></footer></article><nav><ul class="content-nav"><li class="content-nav__prev"><span>Previous: </span><a href="https://nb25877.github.io/terraform-superior-cloud-design-tool/" class="invert" rel="prev" title="Terraform - Superior Cloud Design Tool">Terraform - Superior Cloud Design Tool</a></li></ul></nav></div><aside class="main__left-aside"><div class="main__left-aside__inner"><h3>On this page</h3><nav class="aside-toc" id="aside-toc"></nav></div></aside></div></div><div class="main__right"><div class="main__right-inner"><nav class="navbar"><ul class="navbar__menu"><li><a href="https://nb25877.github.io/" title="About Me" target="_self">About Me</a></li><li class="has-submenu"><a href="https://nb25877.github.io/modules-2/" title="Modules" target="_self" aria-haspopup="true">Modules</a><ul class="navbar__submenu level-2" aria-hidden="true"><li><a href="https://nb25877.github.io/cloud-operations-and-management/" title="Cloud Operations and Management" target="_self">Cloud Operations and Management</a></li><li><a href="https://nb25877.github.io/security-and-risk-management/" title="Security and Risk Management" target="_self">Security and Risk Management</a></li><li><a href="https://nb25877.github.io/advanced-object-oriented-design-and-programming/" title="Advanced Object Oriented Design and Programming" target="_self">Advanced Object Oriented Design and Programming</a></li><li><a href="https://nb25877.github.io/network-security/" title="Network Security" target="_self">Network Security</a></li><li><a href="https://nb25877.github.io/induction-computing/" title="Induction Computing" target="_self">Induction Computing</a></li></ul></li><li><a href="https://nb25877.github.io/authors/nikunj-bhalotia/" title="Posts" target="_self">Posts</a></li></ul></nav><div class="footer main__right-footer"><div class="footer__copy">Powered by Publii</div></div></div></div></main><footer class="footer"><div class="footer__wrap"><div class="footer__inner"><div class="footer__copy">Powered by Publii</div></div></div></footer><div class="content__progress" id="js-content__progress" aria-hidden="true"></div><div class="newsletter-popup" data-show-on-scroll="800px" data-show-after-time="5000ms"><button class="btn white newsletter-popup__close">&times;</button><h3>Subscribe</h3><p>Get the latest news, updates and more delivered directly to your email inbox</p><form>...</form></div><script>window.publiiThemeMenuConfig = {    
+        mobileMenuMode: 'sidebar',        
+        submenuWidth: 300,        
+        mobileMenuExpandableSubmenus: true,
+        isHoverMenu: false,
+        ariaButtonAttribute: 'aria-expanded',
+   };</script><script src="https://nb25877.github.io/assets/js/html-contents.min.js?v=169077c370ab8ca62b029845f80f7fd5" defer="defer"></script><script>document.addEventListener("DOMContentLoaded", function(event) {
+            htmlContents('#aside-toc', {
+                area: '.content__entry',
+                top: 2,
+                bottom: 3,
+                listType: 'o',
+                filter: function(arr) {
+                    return !arr.matches('.noOutline')
+                },
+                addIds: true,
+                addLinks: true
+            });
+
+            setTimeout(function() {
+                handleActiveClass('#aside-toc');
+            }, 0);
+        })</script><script defer="defer" src="https://nb25877.github.io/assets/js/scripts.min.js?v=4fce2b30433039b19e7a444fe8ab80b7"></script><script>var images = document.querySelectorAll('img[loading]');
+
+        for (var i = 0; i < images.length; i++) {
+            if (images[i].complete) {
+                images[i].classList.add('is-loaded');
+            } else {
+                images[i].addEventListener('load', function () {
+                    this.classList.add('is-loaded');
+                }, false);
+            }
+        }</script></body></html>
