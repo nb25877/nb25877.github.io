@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="en-gb"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Deploying a Serverless Function with OpenFaaS - Nikunj Bhalotia E-Portfolio</title><meta name="description" content="Introduction Serverless computing allows developers to run code without managing the underlying infrastructure. Cloud providers handle provisioning, scaling, and maintenance, while developers focus on writing&hellip;"><meta name="generator" content="Publii Open-Source CMS for Static Site"><link rel="canonical" href="https://nb25877.github.io/deploying-a-serverless-function-with-openfaas/"><link rel="alternate" type="application/atom+xml" href="https://nb25877.github.io/feed.xml" title="Nikunj Bhalotia E-Portfolio - RSS"><link rel="alternate" type="application/json" href="https://nb25877.github.io/feed.json" title="Nikunj Bhalotia E-Portfolio - JSON"><meta property="og:title" content="Deploying a Serverless Function with OpenFaaS"><meta property="og:site_name" content="Nikunj Bhalotia E-Portfolio"><meta property="og:description" content="Introduction Serverless computing allows developers to run code without managing the underlying infrastructure. Cloud providers handle provisioning, scaling, and maintenance, while developers focus on writing&hellip;"><meta property="og:url" content="https://nb25877.github.io/deploying-a-serverless-function-with-openfaas/"><meta property="og:type" content="article"><link rel="stylesheet" href="https://nb25877.github.io/assets/css/style.css?v=75822c22f63d0dfe1d2ac7355538ed6e"><script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://nb25877.github.io/deploying-a-serverless-function-with-openfaas/"},"headline":"Deploying a Serverless Function with OpenFaaS","datePublished":"2026-04-03T13:46+04:00","dateModified":"2026-04-03T13:46+04:00","description":"Introduction Serverless computing allows developers to run code without managing the underlying infrastructure. Cloud providers handle provisioning, scaling, and maintenance, while developers focus on writing&hellip;","author":{"@type":"Person","name":"Nikunj Bhalotia","url":"https://nb25877.github.io/authors/nikunj-bhalotia/"},"publisher":{"@type":"Organization","name":"Nikunj Bhalotia"}}</script><noscript><style>img[loading] {
+                    opacity: 1;
+                }</style></noscript></head><body class="post-template"><header class="top"><div class="top__logo"><a class="logo" href="https://nb25877.github.io/">Nikunj Bhalotia E-Portfolio</a></div><div class="top__links"><a href="https://github.com/nb25877" class="top__links-url" aria-label="GitHub" title="GitHub" target="_blank" rel="noopener"><svg height="24" width="24"><use xlink:href="https://nb25877.github.io/assets/svg/svg-map.svg#github"></use></svg></a></div><button class="navbar__toggle" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><span class="navbar__toggle-box"><span class="navbar__toggle-inner">Menu</span></span></button></header><main class="main post"><div class="main__left"><div class="main__left-inner"><div class="main__left-content"><article class="content"><header><h1 class="content__title">Deploying a Serverless Function with OpenFaaS</h1></header><div class="content__entry"><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Introduction</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Serverless computing allows developers to run code without managing the underlying infrastructure. Cloud providers handle provisioning, scaling, and maintenance, while developers focus on writing functions that execute in response to events. This post walks through deploying a simple serverless function using OpenFaaS, an open-source serverless platform that can run on top of Docker and Kubernetes.</p><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Why OpenFaaS?</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">While managed serverless platforms like AWS Lambda and Azure Functions are widely used in production, OpenFaaS offers a provider-agnostic alternative that can run on any infrastructure where Docker or Kubernetes is available. This makes it a good option for learning how serverless works at a lower level, and for organisations that want to avoid vendor lock-in with their serverless workloads (OpenFaaS, 2024).</p><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Setup</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenFaaS was deployed locally using Docker Swarm. The faas-cli command-line tool was installed to manage functions.</p><div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code"><div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right"><div class="absolute right-0 h-8 px-2 items-center inline-flex z-10"><div class="relative"><div class="transition-all opacity-100 scale-100"> </div><div class="absolute inset-0 flex items-center justify-center"><div class="transition-all opacity-0 scale-50"><pre class="language-bash"><code>bash
+# Install faas-cli
+curl -sL https://cli.openfaas.com | sudo sh
+
+# Deploy OpenFaaS on Docker Swarm
+docker swarm init
+git clone https://github.com/openfaas/faas.git
+cd faas
+./deploy_stack.sh
+
+# Log in to the OpenFaaS gateway
+faas-cli login --password &lt;password&gt; --gateway http://127.0.0.1:8080</code></pre></div></div></div></div></div></div><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Creating the Function</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">I created a simple cloud cost estimator function that takes a number of virtual machines and returns an estimated monthly cost. This is a task I deal with regularly when scoping cloud solutions for clients.</p><div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code"><div class="overflow-x-auto"><pre class="language-bash"><code>bash
+# Create a new function using the Python template
+faas-cli new cost-estimator --lang python3
+
+# This creates the following structure:
+# cost-estimator/
+#   handler.py
+#   requirements.txt
+# cost-estimator.yml</code></pre></div></div><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The function logic in <code class="bg-text-200/5 border border-0.5 border-border-300 text-danger-000 whitespace-pre-wrap rounded-[0.4rem] px-1 py-px text-[0.9rem]">handler.py</code>:</p><div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="python code"><div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right"><div class="absolute right-0 h-8 px-2 items-center inline-flex z-10"><div class="relative"><div class="transition-all opacity-100 scale-100"><pre class="language-python"><code>import json
+
+def handle(req):
+    try:
+        data = json.loads(req)
+        vm_count = int(data.get("vm_count", 1))
+        vm_size = data.get("vm_size", "standard")
+
+        pricing = {
+            "small": 25.00,
+            "standard": 75.00,
+            "large": 150.00
+        }
+
+        unit_cost = pricing.get(vm_size, 75.00)
+        monthly_cost = vm_count * unit_cost
+
+        return json.dumps({
+            "vm_count": vm_count,
+            "vm_size": vm_size,
+            "unit_cost_usd": unit_cost,
+            "estimated_monthly_cost_usd": monthly_cost
+        })
+    except Exception as e:
+        return json.dumps({"error": str(e)})</code></pre></div></div></div></div></div><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Building and Deploying</h2><div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code"><div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right"><div class="absolute right-0 h-8 px-2 items-center inline-flex z-10"><div class="relative"><div class="transition-all opacity-100 scale-100"> </div><div class="absolute inset-0 flex items-center justify-center"><div class="transition-all opacity-0 scale-50"><pre class="language-bash"><code>bash
+# Build the function container
+faas-cli build -f cost-estimator.yml
+
+# Deploy to OpenFaaS
+faas-cli deploy -f cost-estimator.yml --gateway http://127.0.0.1:8080</code></pre></div></div></div></div></div></div><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Testing the Function</h2><div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code"><div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right"><div class="absolute right-0 h-8 px-2 items-center inline-flex z-10"><div class="relative"><div class="transition-all opacity-100 scale-100"><pre class="language-bash"><code>bash
+# Invoke the function
+echo '{"vm_count": 5, "vm_size": "standard"}' | faas-cli invoke cost-estimator
+
+# Response:
+# {"vm_count": 5, "vm_size": "standard", "unit_cost_usd": 75.0, "estimated_monthly_cost_usd": 375.0}</code></pre></div></div></div></div></div><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The function executed successfully, returning the cost estimate within milliseconds. OpenFaaS handled the container lifecycle automatically, spinning up the function on invocation and scaling it down when idle.</p><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">How Serverless Optimises Cloud Operations</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Serverless architecture optimises cloud operations in several ways. First, it eliminates the need to provision and maintain servers. The platform handles scaling automatically based on demand, so resources are only consumed when the function is actually running. Second, the pay-per-invocation pricing model of managed serverless platforms means organisations only pay for the compute time they use, which can significantly reduce costs for workloads with variable traffic. Third, serverless functions are small and focused, making them easier to develop, test, and deploy independently compared to monolithic applications (Toosi et al., 2025).</p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The trade-off is that serverless introduces cold start latency when a function has not been invoked recently, and there are limits on execution duration and memory that may not suit all workloads. For long-running or compute-heavy tasks, traditional container-based deployments remain more appropriate.</p><h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">References</h2><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenFaaS (2024) <em>OpenFaaS documentation</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://docs.openfaas.com/">https://docs.openfaas.com/</a></p><p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Toosi, A.N. et al. (2025) 'Serverless Computing for Next-Generation Application Development', <em>Future Generation Computer Systems</em>, 164, p. 107573.</p></div><footer><div class="content__footer-top"><div class="content__meta">by <a href="https://nb25877.github.io/authors/nikunj-bhalotia/" rel="author" title="Nikunj Bhalotia">Nikunj Bhalotia</a></div><div class="content__share"><button class="content__share-button js-content__share-button" aria-label="Share with"><svg width="24" height="24"><use xlink:href="https://nb25877.github.io/assets/svg/svg-map.svg#share"></use></svg></button><div class="content__share-popup js-content__share-popup"></div></div></div><div class="content__footer-bottom"></div></footer></article><nav><ul class="content-nav"><li class="content-nav__prev"><span>Previous: </span><a href="https://nb25877.github.io/migrating-a-mysql-database-to-the-cloud-using-percona-xtrabackup/" class="invert" rel="prev" title="Migrating a MySQL Database to the Cloud Using Percona XtraBackup">Migrating a MySQL Database to the Cloud Using Percona XtraBackup</a></li></ul></nav></div><aside class="main__left-aside"><div class="main__left-aside__inner"><h3>On this page</h3><nav class="aside-toc" id="aside-toc"></nav></div></aside></div></div><div class="main__right"><div class="main__right-inner"><nav class="navbar"><ul class="navbar__menu"><li><a href="https://nb25877.github.io/" title="About Me" target="_self">About Me</a></li><li class="has-submenu"><a href="https://nb25877.github.io/modules-2/" title="Modules" target="_self" aria-haspopup="true">Modules</a><ul class="navbar__submenu level-2" aria-hidden="true"><li><a href="https://nb25877.github.io/cloud-operations-and-management/" title="Cloud Operations and Management" target="_self">Cloud Operations and Management</a></li><li><a href="https://nb25877.github.io/security-and-risk-management/" title="Security and Risk Management" target="_self">Security and Risk Management</a></li><li><a href="https://nb25877.github.io/advanced-object-oriented-design-and-programming/" title="Advanced Object Oriented Design and Programming" target="_self">Advanced Object Oriented Design and Programming</a></li><li><a href="https://nb25877.github.io/network-security/" title="Network Security" target="_self">Network Security</a></li><li><a href="https://nb25877.github.io/induction-computing/" title="Induction Computing" target="_self">Induction Computing</a></li></ul></li><li><a href="https://nb25877.github.io/authors/nikunj-bhalotia/" title="Posts" target="_self">Posts</a></li></ul></nav><div class="footer main__right-footer"><div class="footer__copy">Powered by Publii</div></div></div></div></main><footer class="footer"><div class="footer__wrap"><div class="footer__inner"><div class="footer__copy">Powered by Publii</div></div></div></footer><div class="content__progress" id="js-content__progress" aria-hidden="true"></div><div class="newsletter-popup" data-show-on-scroll="800px" data-show-after-time="5000ms"><button class="btn white newsletter-popup__close">&times;</button><h3>Subscribe</h3><p>Get the latest news, updates and more delivered directly to your email inbox</p><form>...</form></div><script>window.publiiThemeMenuConfig = {    
+        mobileMenuMode: 'sidebar',        
+        submenuWidth: 300,        
+        mobileMenuExpandableSubmenus: true,
+        isHoverMenu: false,
+        ariaButtonAttribute: 'aria-expanded',
+   };</script><script src="https://nb25877.github.io/assets/js/html-contents.min.js?v=169077c370ab8ca62b029845f80f7fd5" defer="defer"></script><script>document.addEventListener("DOMContentLoaded", function(event) {
+            htmlContents('#aside-toc', {
+                area: '.content__entry',
+                top: 2,
+                bottom: 3,
+                listType: 'o',
+                filter: function(arr) {
+                    return !arr.matches('.noOutline')
+                },
+                addIds: true,
+                addLinks: true
+            });
+
+            setTimeout(function() {
+                handleActiveClass('#aside-toc');
+            }, 0);
+        })</script><script defer="defer" src="https://nb25877.github.io/assets/js/scripts.min.js?v=4fce2b30433039b19e7a444fe8ab80b7"></script><script>var images = document.querySelectorAll('img[loading]');
+
+        for (var i = 0; i < images.length; i++) {
+            if (images[i].complete) {
+                images[i].classList.add('is-loaded');
+            } else {
+                images[i].addEventListener('load', function () {
+                    this.classList.add('is-loaded');
+                }, false);
+            }
+        }</script></body></html>

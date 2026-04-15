@@ -22,7 +22,15 @@
 </url>
 <url>
 <loc>https://nb25877.github.io/cloud-operations-and-management/</loc>
-<lastmod>2026-04-03T11:30:41+04:00</lastmod>
+<lastmod>2026-04-03T13:52:57+04:00</lastmod>
+</url>
+<url>
+<loc>https://nb25877.github.io/deploying-a-serverless-function-with-openfaas/</loc>
+<lastmod>2026-04-03T13:46:35+04:00</lastmod>
+</url>
+<url>
+<loc>https://nb25877.github.io/designing-a-disaster-recovery-plan-using-azure-site-recovery/</loc>
+<lastmod>2026-04-03T11:42:29+04:00</lastmod>
 </url>
 <url>
 <loc>https://nb25877.github.io/dr-solutions-design-and-review/</loc>
@@ -35,6 +43,10 @@
 <url>
 <loc>https://nb25877.github.io/induction-computing/</loc>
 <lastmod>2026-01-30T13:30:04+04:00</lastmod>
+</url>
+<url>
+<loc>https://nb25877.github.io/migrating-a-mysql-database-to-the-cloud-using-percona-xtrabackup/</loc>
+<lastmod>2026-04-03T13:14:32+04:00</lastmod>
 </url>
 <url>
 <loc>https://nb25877.github.io/modelling-social-engineering-threats-based-on-aijaz-m-and-nazir-m-2024/</loc>

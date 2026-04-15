@@ -3,12 +3,318 @@
     <title>Nikunj Bhalotia E-Portfolio</title>
     <link href="https://nb25877.github.io/feed.xml" rel="self" />
     <link href="https://nb25877.github.io" />
-    <updated>2026-04-03T11:30:16+04:00</updated>
+    <updated>2026-04-03T13:46:35+04:00</updated>
     <author>
         <name>Nikunj Bhalotia</name>
     </author>
     <id>https://nb25877.github.io</id>
 
+    <entry>
+        <title>Deploying a Serverless Function with OpenFaaS</title>
+        <author>
+            <name>Nikunj Bhalotia</name>
+        </author>
+        <link href="https://nb25877.github.io/deploying-a-serverless-function-with-openfaas/"/>
+        <id>https://nb25877.github.io/deploying-a-serverless-function-with-openfaas/</id>
+
+        <updated>2026-04-03T13:46:35+04:00</updated>
+            <summary type="html">
+                <![CDATA[
+                    Introduction Serverless computing allows developers to run code without managing the underlying infrastructure. Cloud providers handle provisioning, scaling, and maintenance, while developers focus on writing&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Introduction</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Serverless computing allows developers to run code without managing the underlying infrastructure. Cloud providers handle provisioning, scaling, and maintenance, while developers focus on writing functions that execute in response to events. This post walks through deploying a simple serverless function using OpenFaaS, an open-source serverless platform that can run on top of Docker and Kubernetes.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Why OpenFaaS?</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">While managed serverless platforms like AWS Lambda and Azure Functions are widely used in production, OpenFaaS offers a provider-agnostic alternative that can run on any infrastructure where Docker or Kubernetes is available. This makes it a good option for learning how serverless works at a lower level, and for organisations that want to avoid vendor lock-in with their serverless workloads (OpenFaaS, 2024).</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Setup</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenFaaS was deployed locally using Docker Swarm. The faas-cli command-line tool was installed to manage functions.</p>
+<div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code">
+<div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right">
+<div class="absolute right-0 h-8 px-2 items-center inline-flex z-10">
+<div class="relative">
+<div class="transition-all opacity-100 scale-100"> </div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="transition-all opacity-0 scale-50">
+<pre class="language-bash"><code>bash
+# Install faas-cli
+curl -sL https://cli.openfaas.com | sudo sh
+
+# Deploy OpenFaaS on Docker Swarm
+docker swarm init
+git clone https://github.com/openfaas/faas.git
+cd faas
+./deploy_stack.sh
+
+# Log in to the OpenFaaS gateway
+faas-cli login --password &lt;password&gt; --gateway http://127.0.0.1:8080</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Creating the Function</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">I created a simple cloud cost estimator function that takes a number of virtual machines and returns an estimated monthly cost. This is a task I deal with regularly when scoping cloud solutions for clients.</p>
+<div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code">
+<div class="overflow-x-auto">
+<pre class="language-bash"><code>bash
+# Create a new function using the Python template
+faas-cli new cost-estimator --lang python3
+
+# This creates the following structure:
+# cost-estimator/
+#   handler.py
+#   requirements.txt
+# cost-estimator.yml</code></pre>
+</div>
+</div>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The function logic in <code class="bg-text-200/5 border border-0.5 border-border-300 text-danger-000 whitespace-pre-wrap rounded-[0.4rem] px-1 py-px text-[0.9rem]">handler.py</code>:</p>
+<div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="python code">
+<div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right">
+<div class="absolute right-0 h-8 px-2 items-center inline-flex z-10">
+<div class="relative">
+<div class="transition-all opacity-100 scale-100">
+<pre class="language-python"><code>import json
+
+def handle(req):
+    try:
+        data = json.loads(req)
+        vm_count = int(data.get("vm_count", 1))
+        vm_size = data.get("vm_size", "standard")
+
+        pricing = {
+            "small": 25.00,
+            "standard": 75.00,
+            "large": 150.00
+        }
+
+        unit_cost = pricing.get(vm_size, 75.00)
+        monthly_cost = vm_count * unit_cost
+
+        return json.dumps({
+            "vm_count": vm_count,
+            "vm_size": vm_size,
+            "unit_cost_usd": unit_cost,
+            "estimated_monthly_cost_usd": monthly_cost
+        })
+    except Exception as e:
+        return json.dumps({"error": str(e)})</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Building and Deploying</h2>
+<div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code">
+<div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right">
+<div class="absolute right-0 h-8 px-2 items-center inline-flex z-10">
+<div class="relative">
+<div class="transition-all opacity-100 scale-100"> </div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="transition-all opacity-0 scale-50">
+<pre class="language-bash"><code>bash
+# Build the function container
+faas-cli build -f cost-estimator.yml
+
+# Deploy to OpenFaaS
+faas-cli deploy -f cost-estimator.yml --gateway http://127.0.0.1:8080</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Testing the Function</h2>
+<div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-100" tabindex="0" role="group" aria-label="bash code">
+<div class="sticky opacity-0 group-hover/copy:opacity-100 group-focus-within/copy:opacity-100 top-2 py-2 h-12 w-0 float-right">
+<div class="absolute right-0 h-8 px-2 items-center inline-flex z-10">
+<div class="relative">
+<div class="transition-all opacity-100 scale-100">
+<pre class="language-bash"><code>bash
+# Invoke the function
+echo '{"vm_count": 5, "vm_size": "standard"}' | faas-cli invoke cost-estimator
+
+# Response:
+# {"vm_count": 5, "vm_size": "standard", "unit_cost_usd": 75.0, "estimated_monthly_cost_usd": 375.0}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The function executed successfully, returning the cost estimate within milliseconds. OpenFaaS handled the container lifecycle automatically, spinning up the function on invocation and scaling it down when idle.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">How Serverless Optimises Cloud Operations</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Serverless architecture optimises cloud operations in several ways. First, it eliminates the need to provision and maintain servers. The platform handles scaling automatically based on demand, so resources are only consumed when the function is actually running. Second, the pay-per-invocation pricing model of managed serverless platforms means organisations only pay for the compute time they use, which can significantly reduce costs for workloads with variable traffic. Third, serverless functions are small and focused, making them easier to develop, test, and deploy independently compared to monolithic applications (Toosi et al., 2025).</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The trade-off is that serverless introduces cold start latency when a function has not been invoked recently, and there are limits on execution duration and memory that may not suit all workloads. For long-running or compute-heavy tasks, traditional container-based deployments remain more appropriate.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">References</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">OpenFaaS (2024) <em>OpenFaaS documentation</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://docs.openfaas.com/">https://docs.openfaas.com/</a></p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Toosi, A.N. et al. (2025) 'Serverless Computing for Next-Generation Application Development', <em>Future Generation Computer Systems</em>, 164, p. 107573.</p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>Migrating a MySQL Database to the Cloud Using Percona XtraBackup</title>
+        <author>
+            <name>Nikunj Bhalotia</name>
+        </author>
+        <link href="https://nb25877.github.io/migrating-a-mysql-database-to-the-cloud-using-percona-xtrabackup/"/>
+        <id>https://nb25877.github.io/migrating-a-mysql-database-to-the-cloud-using-percona-xtrabackup/</id>
+
+        <updated>2026-04-03T13:14:32+04:00</updated>
+            <summary type="html">
+                <![CDATA[
+                    Introduction Database migration is one of the most critical and risk-prone steps in any cloud migration project. This post walks through the process of migrating&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Introduction</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Database migration is one of the most critical and risk-prone steps in any cloud migration project. This post walks through the process of migrating a MySQL database from a local machine to a cloud environment using Percona XtraBackup, an open-source backup tool designed for MySQL and MariaDB databases. The focus is on maintaining data consistency and minimising downtime during the migration.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Why Percona XtraBackup?</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Percona XtraBackup performs hot backups of MySQL databases, meaning it can create a consistent backup without locking the database or interrupting read and write operations. This is important for production databases where downtime needs to be kept to a minimum. Unlike mysqldump, which creates a logical backup by exporting SQL statements, XtraBackup copies the actual data files at the physical level, making it faster for large databases (Percona, 2024).</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Migration Steps</h2>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 1: Install Percona XtraBackup</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Percona XtraBackup was installed on the source machine running MySQL 8.0 on Ubuntu:</p>
+<pre class="language-bash"><code>sudo apt-get install percona-xtrabackup-80</code></pre>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 2: Create a Full Backup</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">A full backup of the local MySQL database was created:</p>
+<pre class="language-bash"><code>xtrabackup --backup --target-dir=/data/backups/full \
+  --user=root --password=&lt;password&gt;</code></pre>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">This copies the InnoDB data files and transaction logs to the target directory without locking the database.</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 3: Prepare the Backup</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Before restoring, the backup needs to be prepared. This step applies any pending transactions captured in the log files to make the data files consistent:</p>
+<pre class="language-bash"><code>xtrabackup --prepare --target-dir=/data/backups/full</code></pre>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 4: Transfer Backup to Cloud Instance</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The prepared backup was transferred to the cloud-hosted MySQL instance using rsync over SSH:</p>
+<pre class="language-bash"><code>rsync -avz /data/backups/full/ user@cloud-instance:/var/lib/mysql/</code></pre>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 5: Restore on the Cloud Instance</h3>
+<p>On the cloud instance, the MySQL data directory was replaced with the transferred backup files:</p>
+<pre class="language-bash"><code>sudo systemctl stop mysql
+sudo rsync -avz /data/backups/full/ /var/lib/mysql/
+sudo chown -R mysql:mysql /var/lib/mysql
+sudo systemctl start mysql</code></pre>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 6: Verify Data Consistency</h3>
+<p>After restoration, data consistency was verified by comparing row counts and checksums between the source and target databases:</p>
+<pre class="language-bash"><code># On source
+mysql -e "SELECT COUNT(*) FROM app.orders;"
+
+# On target
+mysql -e "SELECT COUNT(*) FROM app.orders;"</code></pre>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Both returned matching results, confirming a successful migration.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">Challenges Faced</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Network transfer speed:</strong> For larger databases, transferring backup files over the network can be slow. Compressing the backup before transfer using gzip or pigz would reduce transfer time significantly.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Permission issues:</strong> After restoring the data directory on the cloud instance, MySQL failed to start because file ownership had changed during the transfer. This was resolved by resetting ownership to the mysql user.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Version compatibility:</strong> Percona XtraBackup must match the MySQL version on both source and target. A version mismatch between XtraBackup 8.0 and an older MySQL instance on the cloud caused an initial restore failure, which was resolved by upgrading the target instance.</p>
+<h6 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">References</h6>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Percona (2024) <em>Percona XtraBackup documentation</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://docs.percona.com/percona-xtrabackup/">https://docs.percona.com/percona-xtrabackup/</a></p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">MySQL (2024) <em>MySQL 8.0 Reference Manual</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://dev.mysql.com/doc/refman/8.0/en/">https://dev.mysql.com/doc/refman/8.0/en/</a></p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>Designing a Disaster Recovery Plan Using Azure Site Recovery</title>
+        <author>
+            <name>Nikunj Bhalotia</name>
+        </author>
+        <link href="https://nb25877.github.io/designing-a-disaster-recovery-plan-using-azure-site-recovery/"/>
+        <id>https://nb25877.github.io/designing-a-disaster-recovery-plan-using-azure-site-recovery/</id>
+
+        <updated>2026-04-03T11:42:29+04:00</updated>
+            <summary type="html">
+                <![CDATA[
+                    1. Introduction Disaster Recovery (DR) is about making sure that when something goes wrong, whether it is a hardware failure, a regional outage, or a&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">1. Introduction</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Disaster Recovery (DR) is about making sure that when something goes wrong, whether it is a hardware failure, a regional outage, or a ransomware attack, services can be restored quickly with minimal data loss. This post walks through the process of designing and implementing a DR plan for a cloud-hosted business application using Microsoft Azure Site Recovery (ASR).</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">While the module's focus has been on OpenStack-based environments, I chose to work with Azure for this exercise because it is the platform I use professionally to manage client infrastructure. The principles of DR planning, including defining recovery objectives, automating failover, and testing recovery procedures, apply regardless of the cloud platform (Carson and Rodrick, 2024).</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">2. Scenario</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The scenario involves a small professional services firm running its core line-of-business application on Azure. The environment includes:</p>
+<ul class="[li_&amp;]:mb-0 [li_&amp;]:mt-1 [li_&amp;]:gap-1 [&amp;:not(:last-child)_ul]:pb-1 [&amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3">
+<li class="whitespace-normal break-words pl-2">Two virtual machines (application server and database server) hosted in Azure UAE North</li>
+<li class="whitespace-normal break-words pl-2">Azure SQL Database for structured data</li>
+<li class="whitespace-normal break-words pl-2">Azure Blob Storage for document storage</li>
+<li class="whitespace-normal break-words pl-2">Users accessing the application through a web frontend</li>
+</ul>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The business requires the application to be recoverable within 1 hour (RTO) with no more than 15 minutes of data loss (RPO).</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">3. DR Strategy Design</h2>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Recovery Objectives</h3>
+<div class="overflow-x-auto w-full px-2 mb-6">
+<table class="min-w-full border-collapse text-sm leading-[1.7] whitespace-normal">
+<thead class="text-left">
+<tr>
+<th class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold" scope="col">Objective</th>
+<th class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold" scope="col">Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Recovery Time Objective (RTO)</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Less than 1 hour</td>
+</tr>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Recovery Point Objective (RPO)</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Less than 15 minutes</td>
+</tr>
+<tr>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">DR Region</td>
+<td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Azure West Europe (secondary)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Components</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Azure Site Recovery (ASR):</strong> Handles continuous replication of virtual machines from the primary region (UAE North) to the secondary region (West Europe). ASR replicates VM disks asynchronously, capturing changes every few minutes to meet the RPO target.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Azure SQL Geo-Replication:</strong> The Azure SQL Database is configured with active geo-replication to the secondary region. This provides an automatically updated readable secondary that can be promoted to primary during a failover.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Azure Blob Storage GRS:</strong> Blob storage is configured with Geo-Redundant Storage (GRS), which replicates data to the paired region. For faster failover, Read-Access GRS (RA-GRS) allows read access to the secondary copy before a full failover is triggered.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]"><strong>Azure Traffic Manager:</strong> A DNS-based traffic routing service configured with priority routing. Under normal conditions, all traffic goes to the primary region. If the health probe detects an outage, traffic is automatically redirected to the secondary region.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">4. Implementation Process</h2>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 1: Enable ASR Replication</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Azure Site Recovery was enabled in the Recovery Services vault. The two virtual machines were added to the replication policy with a replication frequency of 5 minutes. ASR automatically provisions placeholder resources (NICs, disks, availability sets) in the target region.</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 2: Configure SQL Geo-Replication</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Active geo-replication was configured on the Azure SQL Database through the Azure portal. The secondary database was created in West Europe with asynchronous replication. A failover group was set up to allow automatic failover if the primary becomes unreachable.</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 3: Configure Storage Redundancy</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">The Blob Storage account was set to RA-GRS to ensure data is replicated to the paired region and remains readable during an outage.</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 4: Set Up Traffic Manager</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">An Azure Traffic Manager profile was created with priority routing. The primary endpoint pointed to the UAE North frontend, and the secondary endpoint pointed to the West Europe resources. Health probes were configured to check application availability every 30 seconds.</p>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Step 5: Create a Recovery Plan</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">A recovery plan was built in ASR that defines the order of operations during failover. The database server starts first, followed by the application server, ensuring dependencies are respected. Custom scripts were added to update connection strings and verify service health after failover.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">5. Testing the DR Plan</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">A test failover was executed using ASR's built-in test failover feature. This creates the recovered VMs in an isolated virtual network in the secondary region without affecting production. The test confirmed:</p>
+<ul class="[li_&amp;]:mb-0 [li_&amp;]:mt-1 [li_&amp;]:gap-1 [&amp;:not(:last-child)_ul]:pb-1 [&amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3">
+<li class="whitespace-normal break-words pl-2">Both VMs started successfully in the correct order</li>
+<li class="whitespace-normal break-words pl-2">The application connected to the geo-replicated SQL database</li>
+<li class="whitespace-normal break-words pl-2">Users could access the application through the Traffic Manager endpoint</li>
+<li class="whitespace-normal break-words pl-2">Recovery completed in approximately 40 minutes, within the 1-hour RTO target</li>
+</ul>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">6. Reflection</h2>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">What worked well</h3>
+<ul class="[li_&amp;]:mb-0 [li_&amp;]:mt-1 [li_&amp;]:gap-1 [&amp;:not(:last-child)_ul]:pb-1 [&amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3">
+<li class="whitespace-normal break-words pl-2">ASR's continuous replication and automated failover made the process straightforward compared to manual backup and restore approaches</li>
+<li class="whitespace-normal break-words pl-2">The recovery plan feature ensured that VMs started in the right dependency order</li>
+<li class="whitespace-normal break-words pl-2">Test failover allowed validation without impacting production</li>
+</ul>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Challenges</h3>
+<ul class="[li_&amp;]:mb-0 [li_&amp;]:mt-1 [li_&amp;]:gap-1 [&amp;:not(:last-child)_ul]:pb-1 [&amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3">
+<li class="whitespace-normal break-words pl-2">Initial setup required careful configuration of networking in the secondary region to match the primary</li>
+<li class="whitespace-normal break-words pl-2">SQL geo-replication added latency to write operations, which needed to be communicated to the application team</li>
+<li class="whitespace-normal break-words pl-2">Cost of maintaining replicated resources in a secondary region is an ongoing expense that needs to be justified against the business impact of downtime</li>
+</ul>
+<h3 class="text-text-100 mt-2 -mb-1 text-base font-bold">Comparison with open-source approaches</h3>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Tools like Duplicity and Bacula, which my peers explored using OpenStack, offer cost-effective DR for environments where managed services are not available. However, they require more manual effort during recovery and lack the automated failover capabilities that ASR provides. The trade-off is between cost and recovery speed, and the right choice depends on the organisation's budget and RTO requirements.</p>
+<h2 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">7. Conclusion</h2>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">This exercise demonstrated that a well-designed DR plan using Azure Site Recovery can meet tight recovery objectives with relatively low operational effort. The key takeaway is that DR planning is not just about having backups. It requires automated replication, defined recovery procedures, and regular testing to be effective (Carson and Rodrick, 2024).</p>
+<h6 class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">References</h6>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Carson, R. and Rodrick, M. (2024) <em>Business Continuity and Disaster Recovery</em>. Birmingham: Packt Publishing.</p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Microsoft (2024) <em>Azure Site Recovery overview</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://learn.microsoft.com/en-us/azure/site-recovery/site-recovery-overview">https://learn.microsoft.com/en-us/azure/site-recovery/site-recovery-overview</a></p>
+<p class="font-claude-response-body break-words whitespace-normal leading-[1.7]">Microsoft (2024) <em>Active geo-replication for Azure SQL Database</em>. Available at: <a class="underline underline underline-offset-2 decoration-1 decoration-current/40 hover:decoration-current focus:decoration-current" href="https://learn.microsoft.com/en-us/azure/azure-sql/database/active-geo-replication-overview">https://learn.microsoft.com/en-us/azure/azure-sql/database/active-geo-replication-overview</a></p>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>Security Audit of an OpenStack Cloud Application Using OpenVAS</title>
         <author>
@@ -557,284 +863,6 @@ echo "Done. Image: ${IMAGE}:${TAG}"</code></pre>
 <p> </p>
 <!-- wp:paragraph -->
 <p> </p>
-<!-- /wp:paragraph -->
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>Modelling Social Engineering Threats Based on Aijaz, M. and Nazir, M. (2024)</title>
-        <author>
-            <name>Nikunj Bhalotia</name>
-        </author>
-        <link href="https://nb25877.github.io/modelling-social-engineering-threats-based-on-aijaz-m-and-nazir-m-2024/"/>
-        <id>https://nb25877.github.io/modelling-social-engineering-threats-based-on-aijaz-m-and-nazir-m-2024/</id>
-
-        <updated>2026-01-22T14:27:29+04:00</updated>
-            <summary type="html">
-                <![CDATA[
-                    1. What are the main challenges in modelling and evaluating the outcomes of Social Engineering Threats (SETs), and how does this study address them? The&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <!-- wp:paragraph -->
-<p><strong>1. What are the main challenges in modelling and evaluating the outcomes of Social Engineering Threats (SETs), and how does this study address them?</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>The primary challenge in modelling SETs is the inherent unpredictability of human behavior, which makes rigorous mathematical evaluation difficult. Unlike technical exploits, SETs rely on psychological manipulation, which is historically hard to quantify. The study addresses this by structuring SETs not as random events, but as systematic processes involving specific modalities (e.g., email, phone) and persuasion principles (e.g., authority, scarcity). By categorizing these variables, the authors are able to apply Markov Chain models to calculate the probability of an attack moving from one stage to the next.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>2. How do persuasion principles and modalities contribute to the success of SETs?</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Persuasion principles (derived from Cialdini’s framework, such as Reciprocity, Commitment, and Social Proof) act as the "exploit code" of a social engineering attack. The study highlights that the success of a SET depends heavily on the pairing of a Modality (the medium, e.g., social media) with the correct Persuasion Principle. Systematically analyzing these pairs is critical because certain combinations yield higher success rates; for example, "Authority" might be more effective via email, while "Liking" works better on social media. Understanding these combinations allows defenders to predict which specific scenarios pose the highest risk.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>3. What role do the Attack Tree Model and Markov Chain Model play in estimating probabilities?</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>The study utilizes a hybrid approach to estimate risk:</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li><strong>Attack Tree Model:</strong> This is used to calculate the <strong>Attack Occurrence Probability (AOP)</strong>. It maps the hierarchical structure of an attack, using frequency data to estimate how likely a specific attack path is to be attempted.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
-<li><strong>Markov Chain Model:</strong> This is used to calculate the <strong>Attack Success Probability (ASP)</strong>. It models the attack as a sequence of states (e.g., Start &gt; Medium &gt; Persuasion &gt; Compromise). The Markov model calculates the probability of transitioning from one state to the next based on the effectiveness of the chosen persuasion principle.</li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p><strong>4. How can the findings support the development of effective policy frameworks?</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>By quantifying the ASP of specific attacks, organizations can move beyond generic "Security Awareness Training" to targeted interventions. For instance, if the model shows that the "Authority" principle delivered via "Email" has the highest success probability, policies can be adjusted to enforce strict verification for executive requests (e.g., mandatory voice confirmation for wire transfers). This allows resources to be allocated based on mathematical risk rankings rather than anecdotal evidence.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>References</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li>Aijaz, M. and Nazir, M. (2024) ‘Modelling and analysis of social engineering threats using the attack tree and the Markov model’, <em>International Journal of Information Technology</em>, 16(2), pp. 1231–1238. Available at: <a href="https://doi.org/10.1007/s41870-023-01540-z" target="_blank" rel="noreferrer noopener">https://doi.org/10.1007/s41870-023-01540-z</a></li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>Bayesian Risk Update (Think Bayes 2) Based on Downey (2022), Chapters 1 &amp; 2</title>
-        <author>
-            <name>Nikunj Bhalotia</name>
-        </author>
-        <link href="https://nb25877.github.io/bayesian-risk-update-think-bayes-2-based-on-downey-2022-chapters-1-andamp-2/"/>
-        <id>https://nb25877.github.io/bayesian-risk-update-think-bayes-2-based-on-downey-2022-chapters-1-andamp-2/</id>
-
-        <updated>2026-01-22T13:21:55+04:00</updated>
-            <summary type="html">
-                <![CDATA[
-                    I used Allen Downey’s ThinkBayes2 library to practice Diachronic Bayes, the process of updating a hypothesis (H) based on new data (D). Description: This script&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <!-- wp:paragraph -->
-<p>I used Allen Downey’s <code>ThinkBayes2</code> library to practice <strong>Diachronic Bayes</strong>, the process of updating a hypothesis (H) based on new data (D).</p>
-<!-- /wp:paragraph -->
-<p> </p>
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li><strong>The Problem:</strong> I worked through the "Cookie Problem" and "Monty Hall Problem" to understand the mechanics of the formula: P(H|D) = (P(H)P(D|H))/(P(D)).</li>
-<!-- /wp:list-item --> <!-- wp:list-item -->
-<li><strong>Application to Risk:</strong> I treated the "Prior" (P(H)) as our initial risk assessment (e.g., "There is a 10% chance of a breach"). I then calculated the "Likelihood" (P(D|H)) based on new evidence (e.g., "A firewall log showed 5 failed login attempts").</li>
-<!-- /wp:list-item --> <!-- wp:list-item -->
-<li><strong>Outcome:</strong> The calculation produced a "Posterior" probability, mathematically demonstrating that risk is dynamic. This highlighted a flaw in traditional "static" risk registers, which often fail to account for real-time threat intelligence.</li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-<p> </p>
-<!-- wp:paragraph -->
-<p>Description: This script adapts the 'Think Bayes' methodology to a security context. It updates the probability of a specific threat (Hypothesis) being active after observing a specific indicator (Evidence).</p>
-<!-- /wp:paragraph -->
-<p> </p>
-<!-- wp:code {"tokenizedLines":[[["IyBBIHNpbXBsaWZpZWQgY2xhc3Mgc3RydWN0dXJlIGJhc2VkIG9uIERvd25leSdzICdQbWYnIChQcm9iYWJpbGl0eSBNYXNzIEZ1bmN0aW9uKQ=="]],[["Y2xhc3MgUmlza0h5cG90aGVzaXM6"]],[["ICAgIGRlZiBfX2luaXRfXyhzZWxmLCBwcmlvcnMpOg=="]],[["ICAgICAgICAiIiI="]],[["ICAgICAgICBwcmlvcnM6IERpY3Rpb25hcnkgb2Yge0h5cG90aGVzaXM6IFByb2JhYmlsaXR5fQ=="]],[["ICAgICAgICBlLmcuLCB7J0hpZ2hfUmlzayc6IDAuMSwgJ0xvd19SaXNrJzogMC45fQ=="]],[["ICAgICAgICAiIiI="]],[["ICAgICAgICBzZWxmLmh5cG90aGVzZXMgPSBwcmlvcnM="]],[[""]],[["ICAgIGRlZiBub3JtYWxpemUoc2VsZik6"]],[["ICAgICAgICAiIiJFbnN1cmVzIGFsbCBwcm9iYWJpbGl0aWVzIHN1bSB0byAxLjAiIiI="]],[["ICAgICAgICB0b3RhbCA9IHN1bShzZWxmLmh5cG90aGVzZXMudmFsdWVzKCkp"]],[["ICAgICAgICBmb3IgaHlwbyBpbiBzZWxmLmh5cG90aGVzZXM6"]],[["ICAgICAgICAgICAgc2VsZi5oeXBvdGhlc2VzW2h5cG9dIC89IHRvdGFs"]],[[""]],[["ICAgIGRlZiB1cGRhdGUoc2VsZiwgZXZpZGVuY2UsIGxpa2VsaWhvb2RzKTo="]],[["ICAgICAgICAiIiI="]],[["ICAgICAgICBCYXllcyBUaGVvcmVtIEFwcGxpY2F0aW9uOiBQKEh8RSkgPSBQKEgpICogUChFfEgpIC8gUChFKQ=="]],[["ICAgICAgICBldmlkZW5jZTogU3RyaW5nIG5hbWUgb2YgdGhlIGV2aWRlbmNlIG9ic2VydmVk"]],[["ICAgICAgICBsaWtlbGlob29kczogRGljdGlvbmFyeSBvZiB7SHlwb3RoZXNpczogUHJvYmFiaWxpdHlfb2ZfRXZpZGVuY2V9"]],[["ICAgICAgICAiIiI="]],[["ICAgICAgICBmb3IgaHlwbyBpbiBzZWxmLmh5cG90aGVzZXM6"]],[["ICAgICAgICAgICAgIyAxLiBHZXQgdGhlIFByaW9yIFAoSCk="]],[["ICAgICAgICAgICAgcHJpb3IgPSBzZWxmLmh5cG90aGVzZXNbaHlwb10="]],[["ICAgICAgICAgICAg"]],[["ICAgICAgICAgICAgIyAyLiBHZXQgdGhlIExpa2VsaWhvb2QgUChFfEgp"]],[["ICAgICAgICAgICAgIyAiSWYgdGhpcyBoeXBvdGhlc2lzIHdlcmUgdHJ1ZSwgaG93IGxpa2VseSBpcyB0aGlzIGV2aWRlbmNlPyI="]],[["ICAgICAgICAgICAgbGlrZWxpaG9vZCA9IGxpa2VsaWhvb2RzW2h5cG9d"]],[["ICAgICAgICAgICAg"]],[["ICAgICAgICAgICAgIyAzLiBDYWxjdWxhdGUgVW4tbm9ybWFsaXplZCBQb3N0ZXJpb3I="]],[["ICAgICAgICAgICAgc2VsZi5oeXBvdGhlc2VzW2h5cG9dID0gcHJpb3IgKiBsaWtlbGlob29k"]],[["ICAgICAgICAgICAg"]],[["ICAgICAgICAjIDQuIE5vcm1hbGl6ZSAoZGl2aWRpbmcgYnkgUChFKSk="]],[["ICAgICAgICBzZWxmLm5vcm1hbGl6ZSgp"]],[[""]],[["IyAtLS0gVVNFIENBU0U6IElOQ0lERU5UIFJFU1BPTlNFIC0tLQ=="]],[["IyBTY2VuYXJpbzogV2Ugc2VlIGEgZmFpbGVkIGxvZ2luLiBJcyBpdCBhIEJydXRlIEZvcmNlIEF0dGFjayBvciBqdXN0IGEgVXNlciBNaXN0YWtlPw=="]],[[""]],[["IyAxLiBFU1RBQkxJU0ggUFJJT1JTIChCYXNlbGluZSBwcm9iYWJpbGl0eSk="]],[["IyBXZSBhc3N1bWUgQnJ1dGUgRm9yY2UgYXR0YWNrcyBhcmUgcmFyZSAoMTAlKSBjb21wYXJlZCB0byBVc2VyIE1pc3Rha2VzICg5MCUp"]],[["cHJpb3JzID0geydCcnV0ZV9Gb3JjZSc6IDAuMSwgJ1VzZXJfTWlzdGFrZSc6IDAuOX0="]],[["cmlza19tb2RlbCA9IFJpc2tIeXBvdGhlc2lzKHByaW9ycyk="]],[[""]],[["cHJpbnQoIi0tLSBQUklPUiBCRUxJRUZTIC0tLSIp"]],[["cHJpbnQocmlza19tb2RlbC5oeXBvdGhlc2VzKQ=="]],[[""]],[["IyAyLiBORVcgRVZJREVOQ0U6IDUgRmFpbGVkIExvZ2lucyBpbiAxIE1pbnV0ZQ=="]],[["IyBMaWtlbGlob29kIFAoRXxIKTo="]],[["IyAtIElmIGl0IElTIGEgQnJ1dGUgRm9yY2UgYXR0YWNrLCA1IGZhaWxzIGluIDEgbWluIGlzIHZlcnkgbGlrZWx5ICg5MCUp"]],[["IyAtIElmIGl0IElTIGEgVXNlciBNaXN0YWtlLCA1IGZhaWxzIGluIDEgbWluIGlzIHJhcmUgKDUlKQ=="]],[["ZXZpZGVuY2VfbGlrZWxpaG9vZHMgPSB7"]],[["ICAgICdCcnV0ZV9Gb3JjZSc6IDAuOTAs"]],[["ICAgICdVc2VyX01pc3Rha2UnOiAwLjA1"]],[["fQ=="]],[[""]],[["IyAzLiBVUERBVEUgQkVMSUVGUw=="]],[["cmlza19tb2RlbC51cGRhdGUoZXZpZGVuY2U9IjVfZmFpbHNfMV9taW4iLCBsaWtlbGlob29kcz1ldmlkZW5jZV9saWtlbGlob29kcyk="]],[[""]],[["cHJpbnQoIlxuLS0tIFBPU1RFUklPUiBCRUxJRUZTIChBZnRlciBFdmlkZW5jZSkgLS0tIik="]],[["Zm9yIGh5cG8sIHByb2IgaW4gcmlza19tb2RlbC5oeXBvdGhlc2VzLml0ZW1zKCk6"]],[["ICAgIHByaW50KGYie2h5cG99OiB7cHJvYjouMiV9Iik="]],[[""]],[["IyBSZXN1bHQ6IFRoZSBwcm9iYWJpbGl0eSBvZiAnQnJ1dGVfRm9yY2UnIHdpbGwganVtcCBzaWduaWZpY2FudGx5"]],[[""]]]} -->
-<pre class="wp-block-code"><code># A simplified class structure based on Downey's 'Pmf' (Probability Mass Function)
-class RiskHypothesis:
-    def __init__(self, priors):
-        """
-        priors: Dictionary of {Hypothesis: Probability}
-        e.g., {'High_Risk': 0.1, 'Low_Risk': 0.9}
-        """
-        self.hypotheses = priors
-
-    def normalize(self):
-        """Ensures all probabilities sum to 1.0"""
-        total = sum(self.hypotheses.values())
-        for hypo in self.hypotheses:
-            self.hypotheses[hypo] /= total
-
-    def update(self, evidence, likelihoods):
-        """
-        Bayes Theorem Application: P(H|E) = P(H) * P(E|H) / P(E)
-        evidence: String name of the evidence observed
-        likelihoods: Dictionary of {Hypothesis: Probability_of_Evidence}
-        """
-        for hypo in self.hypotheses:
-            # 1. Get the Prior P(H)
-            prior = self.hypotheses[hypo]
-            
-            # 2. Get the Likelihood P(E|H)
-            # "If this hypothesis were true, how likely is this evidence?"
-            likelihood = likelihoods[hypo]
-            
-            # 3. Calculate Un-normalized Posterior
-            self.hypotheses[hypo] = prior * likelihood
-            
-        # 4. Normalize (dividing by P(E))
-        self.normalize()
-
-# --- USE CASE: INCIDENT RESPONSE ---
-# Scenario: We see a failed login. Is it a Brute Force Attack or just a User Mistake?
-
-# 1. ESTABLISH PRIORS (Baseline probability)
-# We assume Brute Force attacks are rare (10%) compared to User Mistakes (90%)
-priors = {'Brute_Force': 0.1, 'User_Mistake': 0.9}
-risk_model = RiskHypothesis(priors)
-
-print("--- PRIOR BELIEFS ---")
-print(risk_model.hypotheses)
-
-# 2. NEW EVIDENCE: 5 Failed Logins in 1 Minute
-# Likelihood P(E|H):
-# - If it IS a Brute Force attack, 5 fails in 1 min is very likely (90%)
-# - If it IS a User Mistake, 5 fails in 1 min is rare (5%)
-evidence_likelihoods = {
-    'Brute_Force': 0.90,
-    'User_Mistake': 0.05
-}
-
-# 3. UPDATE BELIEFS
-risk_model.update(evidence="5_fails_1_min", likelihoods=evidence_likelihoods)
-
-print("\n--- POSTERIOR BELIEFS (After Evidence) ---")
-for hypo, prob in risk_model.hypotheses.items():
-    print(f"{hypo}: {prob:.2%}")
-
-# Result: The probability of 'Brute_Force' will jump significantly
-
-</code></pre>
-<!-- /wp:code -->
-<p> </p>
-<!-- wp:paragraph -->
-<p><strong>References</strong>:</p>
-<!-- /wp:paragraph -->
-<p> </p>
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li>Downey, A. (2022) <em>Think Bayes 2</em>. Available at: <a href="https://allendowney.github.io/ThinkBayes2/" target="_blank" rel="noreferrer noopener">https://allendowney.github.io/ThinkBayes2/</a>.</li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>Monte Carlo Simulation (Python) Based on Fizell (2022)</title>
-        <author>
-            <name>Nikunj Bhalotia</name>
-        </author>
-        <link href="https://nb25877.github.io/monte-carlo-simulation-python-based-on-fizell-2022/"/>
-        <id>https://nb25877.github.io/monte-carlo-simulation-python-based-on-fizell-2022/</id>
-
-        <updated>2026-01-22T12:56:07+04:00</updated>
-            <summary type="html">
-                <![CDATA[
-                    To understand how to model risks with high variance, I developed a Python script using numpy and pandas to run a Monte Carlo simulation. Instead&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <!-- wp:paragraph -->
-<p>To understand how to model risks with high variance, I developed a Python script using <code>numpy</code> and <code>pandas</code> to run a Monte Carlo simulation. Instead of relying on a single "average" prediction for future risk exposure (e.g., potential financial loss), the simulation generated <strong>1,000 random iterations</strong> based on historical volatility.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:list -->
-<ul class="wp-block-list"><!-- wp:list-item -->
-<li><strong>Key Concept Applied:</strong> The script used <code>norm.ppf</code> (Percent Point Function) to generate random variables within a specified mean and standard deviation, effectively simulating "black swan" events and best/worst-case scenarios.</li>
-<!-- /wp:list-item -->
-
-<!-- wp:list-item -->
-<li><strong>Outcome:</strong> The output provided a probability distribution rather than a single number. This allowed me to state with <strong>95% confidence</strong> that the potential risk exposure would fall within a specific range, providing a far more defensible metric for stakeholders than a "High/Medium/Low" label.</li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
-
-<!-- wp:paragraph -->
-<p>Description: This script simulates 1,000 potential outcomes for a financial risk scenario (e.g., cost of a data breach) using historical volatility data. It calculates the 95% confidence interval (Value at Risk).</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:code {"tokenizedLines":[[["aW1wb3J0IG51bXB5IGFzIG5w"]],[["aW1wb3J0IHBhbmRhcyBhcyBwZA=="]],[["aW1wb3J0IG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdA=="]],[["ZnJvbSBzY2lweS5zdGF0cyBpbXBvcnQgbm9ybQ=="]],[[""]],[["IyAtLS0gQ09ORklHVVJBVElPTiAtLS0="]],[["IyBTY2VuYXJpbzogRXN0aW1hdGluZyBwb3RlbnRpYWwgZmluYW5jaWFsIGxvc3MgZnJvbSBhIHN1cHBseSBjaGFpbiBkaXNydXB0aW9u"]],[["IyBCYXNlZCBvbiBoaXN0b3JpY2FsIGRhdGEsIHdlIGFzc3VtZSBhIG5vcm1hbCBkaXN0cmlidXRpb24gb2YgZGFpbHkgbG9zcy4="]],[["c2ltdWxhdGlvbnMgPSAxMDAwICAgICAgICAgICMgTnVtYmVyIG9mIGl0ZXJhdGlvbnM="]],[["ZGF5c190b19mb3JlY2FzdCA9IDMwICAgICAgICMgRHVyYXRpb24gb2YgdGhlIHJpc2sgZXZlbnQ="]],[["YXZnX2RhaWx5X2xvc3MgPSA1MDAwICAgICAgICMgTWVhbiBkYWlseSBsb3NzIGluIEdCUA=="]],[["c3RkX2Rldl9sb3NzID0gMTUwMCAgICAgICAgICMgVm9sYXRpbGl0eSAoU3RhbmRhcmQgRGV2aWF0aW9uKQ=="]],[[""]],[["IyAtLS0gTU9OVEUgQ0FSTE8gU0lNVUxBVElPTiAtLS0="]],[["ZGVmIHJ1bl9zaW11bGF0aW9uKCk6"]],[["ICAgIHJlc3VsdHMgPSBbXQ=="]],[["ICAgIA=="]],[["ICAgIGZvciBpIGluIHJhbmdlKHNpbXVsYXRpb25zKTo="]],[["ICAgICAgICAjIEdlbmVyYXRlIHJhbmRvbSBkYWlseSBsb3NzZXMgYmFzZWQgb24gbm9ybWFsIGRpc3RyaWJ1dGlvbg=="]],[["ICAgICAgICAjIG5vcm0ucHBmIGNvbnZlcnRzIGEgcmFuZG9tIHBlcmNlbnRhZ2UgKDAtMSkgdG8gYSB2YWx1ZSBvbiB0aGUgZGlzdHJpYnV0aW9uIGN1cnZl"]],[["ICAgICAgICBkYWlseV9sb3NzZXMgPSBub3JtLnBwZihucC5yYW5kb20ucmFuZChkYXlzX3RvX2ZvcmVjYXN0KSwgbG9jPWF2Z19kYWlseV9sb3NzLCBzY2FsZT1zdGRfZGV2X2xvc3Mp"]],[["ICAgICAgICA="]],[["ICAgICAgICAjIEN1bXVsYXRpdmUgc3VtIG9mIGxvc3NlcyBmb3IgdGhpcyAzMC1kYXkgaXRlcmF0aW9u"]],[["ICAgICAgICB0b3RhbF9ldmVudF9jb3N0ID0gZGFpbHlfbG9zc2VzLnN1bSgp"]],[["ICAgICAgICByZXN1bHRzLmFwcGVuZCh0b3RhbF9ldmVudF9jb3N0KQ=="]],[["ICAgIA=="]],[["ICAgIHJldHVybiBucC5hcnJheShyZXN1bHRzKQ=="]],[[""]],[["IyAtLS0gRVhFQ1VUSU9OICYgQU5BTFlTSVMgLS0t"]],[["c2ltdWxhdGVkX2Nvc3RzID0gcnVuX3NpbXVsYXRpb24oKQ=="]],[[""]],[["IyBDYWxjdWxhdGUgS2V5IE1ldHJpY3M="]],[["bWVhbl9jb3N0ID0gbnAubWVhbihzaW11bGF0ZWRfY29zdHMp"]],[["d29yc3RfY2FzZSA9IG5wLnBlcmNlbnRpbGUoc2ltdWxhdGVkX2Nvc3RzLCA5NSkgIyA5NXRoIHBlcmNlbnRpbGUgKFZhbHVlIGF0IFJpc2sp"]],[["YmVzdF9jYXNlID0gbnAucGVyY2VudGlsZShzaW11bGF0ZWRfY29zdHMsIDUpICAgIyA1dGggcGVyY2VudGlsZQ=="]],[[""]],[["cHJpbnQoZiItLS0gUklTSyBGT1JFQ0FTVCAoMzAgREFZUykgLS0tIik="]],[["cHJpbnQoZiJNZWFuIEV4cGVjdGVkIENvc3Q6IMKje21lYW5fY29zdDosLjJmfSIp"]],[["cHJpbnQoZiI5NSUgQ29uZmlkZW5jZSBXb3JzdCBDYXNlOiDCo3t3b3JzdF9jYXNlOiwuMmZ9Iik="]],[["cHJpbnQoZiI1JSBDb25maWRlbmNlIEJlc3QgQ2FzZTogwqN7YmVzdF9jYXNlOiwuMmZ9Iik="]],[[""]],[["IyBPcHRpb25hbDogVmlzdWFsaXphdGlvbiBjb2RlIHdvdWxkIGdvIGhlcmU="]],[["IyBwbHQuaGlzdChzaW11bGF0ZWRfY29zdHMsIGJpbnM9NTAp"]]]} -->
-<pre class="wp-block-code"><code>import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.stats import norm
-
-# --- CONFIGURATION ---
-# Scenario: Estimating potential financial loss from a supply chain disruption
-# Based on historical data, we assume a normal distribution of daily loss.
-simulations = 1000          # Number of iterations
-days_to_forecast = 30       # Duration of the risk event
-avg_daily_loss = 5000       # Mean daily loss in GBP
-std_dev_loss = 1500         # Volatility (Standard Deviation)
-
-# --- MONTE CARLO SIMULATION ---
-def run_simulation():
-    results = &#091;]
-    
-    for i in range(simulations):
-        # Generate random daily losses based on normal distribution
-        # norm.ppf converts a random percentage (0-1) to a value on the distribution curve
-        daily_losses = norm.ppf(np.random.rand(days_to_forecast), loc=avg_daily_loss, scale=std_dev_loss)
-        
-        # Cumulative sum of losses for this 30-day iteration
-        total_event_cost = daily_losses.sum()
-        results.append(total_event_cost)
-    
-    return np.array(results)
-
-# --- EXECUTION &#038; ANALYSIS ---
-simulated_costs = run_simulation()
-
-# Calculate Key Metrics
-mean_cost = np.mean(simulated_costs)
-worst_case = np.percentile(simulated_costs, 95) # 95th percentile (Value at Risk)
-best_case = np.percentile(simulated_costs, 5)   # 5th percentile
-
-print(f&#034;--- RISK FORECAST (30 DAYS) ---&#034;)
-print(f&#034;Mean Expected Cost: £{mean_cost:,.2f}&#034;)
-print(f&#034;95% Confidence Worst Case: £{worst_case:,.2f}&#034;)
-print(f&#034;5% Confidence Best Case: £{best_case:,.2f}&#034;)
-
-# Optional: Visualization code would go here
-# plt.hist(simulated_costs, bins=50)</code></pre>
-<!-- /wp:code -->
-
-<!-- wp:heading -->
-<h2 class="wp-block-heading">References:</h2>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>Fizell, Z. (2022) <em>How to Create a Monte Carlo Simulation using Python</em>. Available at: <a href="https://towardsdatascience.com/how-to-create-a-monte-carlo-simulation-using-python-c24634a0978a/" target="_blank" rel="noreferrer noopener">https://towardsdatascience.com/how-to-create-a-monte-carlo-simulation-using-python-c24634a0978a/</a></p>
 <!-- /wp:paragraph -->
             ]]>
         </content>
